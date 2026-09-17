@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Next Lap</title>
+    <link href="predict_next_lap.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="page-layout">
+    <div class="left-panel">
+        <h1>Predict Next Lap</h1>
+        <p class="subtitle">Edit the last 10 laps of data and predict the next lap time.</p>
+
+        <div class="table-wrapper">
+            <table class="lap-input-table" id="lap-input-table">
+                <thead>
+                    <tr>
+                        <th>Lap</th>
+                        <th>Stint</th>
+                        <th>Compound</th>
+                        <th>Position</th>
+                        <th>Air Temp</th>
+                        <th>Track Temp</th>
+                        <th>Rainfall</th>
+                        <th>Tyre Age</th>
+                    </tr>
+                </thead>
+                <tbody id="lap-input-body"></tbody>
+            </table>
+        </div>
+
+        <div id="loading-msg" style="display:none;"></div>
+
+        <button class="predict-btn" type="button" onclick="predictNextLap()">Predict Next Lap</button>
+
+
+<div id="error-msg" style="display:none; color:#ff2a2a;">
+    Prediction failed. Please try again.
+</div>
+
+    <div class="right-panel">
+        <div id="results-section" style="display:none;">
+            <h1>Predicted Next Lap</h1>
+            <div class="result-display">
+                <p>Estimated Lap Time</p>
+                <h2 id="predicted-lap">—</h2>
+                <span>seconds</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bg-image"></div>
+  <link href="../sidebar.css" rel="stylesheet">
+<script src="../sidebar.js"></script>
+
+<script src="predict_next_lap.js"></script>
+<script src="../sound.js"></script>
+</body>
+</html>

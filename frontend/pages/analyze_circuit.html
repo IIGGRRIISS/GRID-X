@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analyze Circuit — GRID-X</title>
+
+    <link href="analyze_circuit.css" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+    <h1>Analyze Circuit</h1>
+
+    <p class="subtitle">
+        Upload a schematic image of a circuit to identify it.
+    </p>
+
+    <p class="note">
+        ⚠️ Please upload a schematic/map image of the circuit.
+    </p>
+
+
+    <!-- ================= UPLOAD AREA ================= -->
+
+    <div
+        class="upload-area"
+        id="upload-area"
+        onclick="document.getElementById('file-input').click()"
+    >
+
+        <div class="upload-icon">⬆</div>
+
+        <p class="upload-text">
+            Click to upload or drag and drop
+        </p>
+
+        <p class="upload-sub">
+            PNG, JPG supported
+        </p>
+
+        <input
+            type="file"
+            id="file-input"
+            accept="image/png, image/jpeg"
+            style="display:none"
+            onchange="handleFile(event)"
+        >
+
+    </div>
+
+
+    <!-- ================= IMAGE PREVIEW ================= -->
+
+    <div id="preview-container" style="display:none;">
+
+        <img
+            id="image-preview"
+            src=""
+            alt="Circuit Preview"
+        >
+
+    </div>
+
+
+    <!-- ================= LOADING ================= -->
+
+    <div id="loading-msg" style="display:none;">
+
+        <div class="loading-state">
+
+            <span class="loading-spinner"></span>
+
+            <span>Analyzing Circuit...</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= ANALYZE BUTTON ================= -->
+
+    <button
+        class="analyze-btn"
+        id="analyze-btn"
+        type="button"
+        onclick="analyzeCircuit()"
+        style="display:none;"
+    >
+        Analyze Circuit
+    </button>
+
+
+    <!-- ================= ERROR ================= -->
+
+    <div
+        id="error-msg"
+        style="display:none;"
+    >
+        Analysis failed. Please try again.
+    </div>
+
+
+    <!-- ================= RESULTS ================= -->
+
+    <div id="results-section" style="display:none;">
+
+        <div class="top-prediction">
+
+            <h2 id="top-circuit-name">—</h2>
+
+            <p id="top-circuit-confidence">—</p>
+
+            <div class="conf-bar">
+                <div
+                    class="conf-fill"
+                    id="conf-fill"
+                ></div>
+            </div>
+
+
+            <div
+                class="metadata-grid"
+                id="metadata-grid"
+            ></div>
+
+        </div>
+
+
+        <h1>Other Predictions</h1>
+
+        <div
+            class="other-predictions"
+            id="other-predictions"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<link href="../sidebar.css" rel="stylesheet">
+
+<script src="../sidebar.js"></script>
+
+
+<!-- ================= BACKGROUND ================= -->
+
+<div class="bg-image"></div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="analyze_circuit.js"></script>
+
+<script src="../sound.js"></script>
+
+</body>
+</html>

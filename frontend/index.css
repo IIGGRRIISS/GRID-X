@@ -1,0 +1,106 @@
+body {
+    font-family: 'Syne', sans-serif;
+    font-weight: 500;
+    margin: 0;
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.content {
+    color: rgb(255, 255, 255);
+    text-align: center;
+    font-size: 50px;
+    font-family: 'Orbitron', sans-serif;
+    color: rgb(255, 255, 255);
+}
+
+.sidebar {
+    border: 2px solid rgb(255, 255, 255);
+}
+
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.navbar {
+    position: relative;
+    z-index: 10;
+    background:transparent !important;
+    backdrop-filter:none;
+    border-bottom: none;
+}
+
+.navbar-nav .nav-link {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 16px !important;
+}
+.navbar-toggler {
+    border-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255%2C42%2C42%2C1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+.navbar-collapse {
+    background:transparent;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.navbar-nav .nav-link.active   { color: #ff0000 !important; }
+.navbar-nav .nav-link.inactive { color: #ffffff !important; }
+.navbar-nav .nav-link:hover    { color: #5c5c5c !important; }
+@media (max-width: 480px) {
+    body {
+        padding: 0;
+    }
+
+    .content {
+        font-size: 28px;
+        letter-spacing: 1px;
+        padding: 20px;
+    }
+
+    .navbar-nav .nav-link {
+        font-size: 14px !important;
+        letter-spacing: 1px;
+        padding: 6px 10px !important;
+    }
+
+    .navbar-collapse {
+        background: rgba(0, 0, 0, 0.85);
+        padding: 12px 16px;
+        border-radius: 8px;
+    }
+}
+@media (max-width: 360px) {
+    .modules-container {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 12px 8px;
+        gap: 8px;
+    }
+
+    .module {
+        font-size: 11px;
+        height: 120px;
+    }
+
+    .inner {
+        font-size: 10px;
+        padding: 3px 10px;
+    }
+}
+

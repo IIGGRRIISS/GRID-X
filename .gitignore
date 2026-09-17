@@ -1,0 +1,10 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+data/
+models/
+.DS_Store
+.env
+*.zip
+GRID-X pakka wala/

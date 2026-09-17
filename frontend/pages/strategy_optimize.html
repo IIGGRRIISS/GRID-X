@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategy Optimizer — GRID-X</title>
+    <link href="strategy_optimize.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="page-layout">
+    <div class="left-panel">
+        <h1>Strategy Optimizer</h1>
+
+        <form>
+            <label for="driver">Driver:</label>
+            <select id="driver">
+                <option value="VER">Max Verstappen</option>
+                <option value="NOR">Lando Norris</option>
+                <option value="LEC">Charles Leclerc</option>
+                <option value="HAM">Lewis Hamilton</option>
+                <option value="RUS">George Russell</option>
+                <option value="PIA">Oscar Piastri</option>
+                <option value="SAI">Carlos Sainz</option>
+                <option value="ALO">Fernando Alonso</option>
+            </select>
+
+            <label for="circuit">Circuit:</label>
+            <select id="circuit">
+                <option value="bahrain_circuit">Bahrain International Circuit</option>
+                <option value="jeddah_corniche_circuit">Jeddah Corniche Circuit</option>
+                <option value="albert_park">Albert Park Circuit</option>
+                <option value="suzuka_international_circuit">Suzuka Circuit</option>
+                <option value="shanghai_international_circuit">Shanghai International Circuit</option>
+                <option value="miami_international_circuit">Miami International Autodrome</option>
+                <option value="imola_circuit">Imola Circuit</option>
+                <option value="monaco_circuit">Circuit de Monaco</option>
+                <option value="barcelona_catalunya_circuit">Circuit de Barcelona-Catalunya</option>
+                <option value="circuit_gilles_villeneuve">Circuit Gilles Villeneuve</option>
+                <option value="red_bull_ring_circuit">Red Bull Ring</option>
+                <option value="silverstone_circuit">Silverstone Circuit</option>
+                <option value="hungaroring_circuit">Hungaroring</option>
+                <option value="spa_francorchamps_circuit">Circuit de Spa-Francorchamps</option>
+                <option value="zandvoort_circuit">Circuit Zandvoort</option>
+                <option value="monza_circuit">Autodromo Nazionale Monza</option>
+                <option value="baku_city_circuit">Baku City Circuit</option>
+                <option value="marina_bay_circuit">Marina Bay Street Circuit</option>
+                <option value="america_circuit">Circuit of the Americas</option>
+                <option value="autodromo_hermano">Autódromo Hermanos Rodríguez</option>
+                <option value="interlagos_circuit">Interlagos</option>
+                <option value="las_vegas_street_circuit">Las Vegas Strip Circuit</option>
+                <option value="lusail_international_circuit">Lusail International Circuit</option>
+                <option value="yas_marina_circuit">Yas Marina Circuit</option>
+            </select>
+
+            <label for="start_compound">Start Compound:</label>
+            <select id="start_compound">
+                <option value="SOFT">SOFT</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="HARD">HARD</option>
+            </select>
+
+            <label>Air Temperature <input id="air_temp" class="air-input" type="number" min="5" max="45" value="20"> °C <span class="input-hint">(5–45)</span></label>
+            <label>Track Temperature <input id="track_temp" class="air-input" type="number" min="5" max="60" value="30"> °C <span class="input-hint">(5–60)</span></label>
+            <label>Humidity <input id="humidity" class="air-input" type="number" min="0" max="100" value="60"> % <span class="input-hint">(0–100)</span></label>
+            <label>Rainfall <input id="rainfall" class="air-input" type="number" min="0" max="50" value="0"> mm <span class="input-hint">(0–50)</span></label>
+
+            <label for="total_laps">Total Race Laps: <input type="number" id="total_laps" class="air-input" min="10" max="100" value="52"> <span class="input-hint">(10–100)</span></label>
+        </form>
+
+    <div id="loading-msg" style="display:none;"></div>
+        <button class="optimize-btn" type="button" onclick="optimizeStrategy()">Optimize Strategy</button>
+    <div id="error-msg" style="display:none; color:#ff2a2a;">
+    </div>
+
+    <div class="right-panel">
+        <div id="results-section" style="display:none;">
+            <h1>Strategy Results</h1>
+
+            <div class="result-meta">
+                <div class="meta-card">
+                    <p>Total Race Time</p>
+                    <h2 id="res-race-time">—</h2>
+                </div>
+                <div class="meta-card">
+                    <p>Pit Stops</p>
+                    <h2 id="res-pit-count">—</h2>
+                </div>
+            </div>
+
+            <h1>Pit Stop Timeline</h1>
+            <div class="timeline-container" id="timeline-container"></div>
+
+            <h1>Pit Stop Details</h1>
+            <table class="pit-table">
+                <thead>
+                    <tr>
+                        <th>Stop</th>
+                        <th>Lap</th>
+                        <th>Compound</th>
+                    </tr>
+                </thead>
+                <tbody id="pit-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="bg-image"></div>
+<link href="../sidebar.css" rel="stylesheet">
+<script src="../sidebar.js"></script>
+<script src="strategy_optimize.js"></script>
+<script src="../sound.js"></script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+/* ===== GRID-X SIDEBAR ===== */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap');
+#gx-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 240px;
+    background: #0d0d0d;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: width 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+#gx-sidebar.collapsed {
+    width: 0;
+}
+
+#gx-sidebar-toggle {
+    position: fixed;
+    left: 240px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 48px;
+    background: #0d0d0d;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    transition: left 0.3s ease;
+    color: #888;
+    font-size: 10px;
+}
+
+#gx-sidebar-toggle:hover {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+#gx-sidebar.collapsed ~ #gx-sidebar-toggle,
+body.sidebar-collapsed #gx-sidebar-toggle {
+    left: 0;
+}
+
+.gx-sidebar-logo {
+    padding: 28px 24px 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    white-space: nowrap;
+}
+
+.gx-sidebar-logo span {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #ffffff;
+}
+
+.gx-sidebar-logo span em {
+    color: #ff2a2a;
+    font-style: normal;
+}
+
+.gx-sidebar-label {
+    padding: 20px 24px 8px 24px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #444;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.gx-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 12px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.gx-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #888;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease;
+    position: relative;
+}
+
+.gx-nav a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.gx-nav a.active {
+    color: #ffffff;
+    font-weight: 700;
+    background: rgba(255, 42, 42, 0.08);
+}
+
+.gx-nav a.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    background: #ff2a2a;
+    border-radius: 0 3px 3px 0;
+}
+
+.gx-nav-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.gx-sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    white-space: nowrap;
+}
+
+.gx-sidebar-footer a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #555;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transition: color 0.2s ease;
+}
+
+.gx-sidebar-footer a:hover {
+    color: #fff;
+}
+
+/* Push page content when sidebar is open */
+body.sidebar-open {
+    padding-left: 260px;
+    transition: padding-left 0.3s ease;
+}
+
+body.sidebar-collapsed {
+    padding-left: 20px;
+    transition: padding-left 0.3s ease;
+}
+@media (max-width: 768px) {
+    #gx-sidebar {
+        width: 200px;
+    }
+
+    #gx-sidebar-toggle {
+        left: 200px;
+    }
+
+    #gx-sidebar.collapsed ~ #gx-sidebar-toggle,
+    body.sidebar-collapsed #gx-sidebar-toggle {
+        left: 0;
+    }
+
+    .gx-nav a {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    .gx-sidebar-logo span {
+        font-size: 15px;
+        letter-spacing: 2px;
+    }
+
+    body.sidebar-open {
+        padding-left: 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    #gx-sidebar {
+        width: 180px;
+    }
+
+    #gx-sidebar-toggle {
+        left: 180px;
+        width: 16px;
+        height: 40px;
+    }
+
+    #gx-sidebar.collapsed ~ #gx-sidebar-toggle,
+    body.sidebar-collapsed #gx-sidebar-toggle {
+        left: 0;
+    }
+
+    .gx-nav a {
+        font-size: 12px;
+        padding: 8px 8px;
+        letter-spacing: 0.5px;
+    }
+
+    .gx-sidebar-logo {
+        padding: 20px 16px;
+    }
+
+    .gx-sidebar-logo span {
+        font-size: 13px;
+        letter-spacing: 2px;
+    }
+
+    .gx-sidebar-label {
+        font-size: 8px;
+        padding: 16px 16px 6px;
+    }
+
+    .gx-sidebar-footer a {
+        font-size: 11px;
+    }
+
+    body.sidebar-open {
+        padding-left: 200px;
+    }
+}
+
+@media (max-width: 360px) {
+    #gx-sidebar {
+        width: 160px;
+    }
+
+    #gx-sidebar-toggle {
+        left: 160px;
+    }
+
+    .gx-nav a {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+
+    .gx-sidebar-logo span {
+        font-size: 12px;
+    }
+
+    body.sidebar-open {
+        padding-left: 180px;
+    }
+}

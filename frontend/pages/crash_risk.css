@@ -1,0 +1,465 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: transparent;
+    color: #ffffff;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 28px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 40px 0 20px 0;
+    border-left: 4px solid #ff2a2a;
+    padding-left: 15px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+form {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 700px;
+}
+
+label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+select,
+input[type="number"] {
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    color: white;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+select:focus,
+input[type="number"]:focus {
+    border-color: #ff2a2a;
+    box-shadow: 0 0 8px rgba(255, 42, 42, 0.2);
+}
+
+select { width: 100%; cursor: pointer; }
+select option { background: #111111; }
+select option:hover, select option:checked { background: #ff2a2a; color: white; }
+
+.air-input { width: 80px; }
+input[type="number"] { appearance: textfield; }
+
+/* Toggle switch */
+.toggle-row { display: flex; align-items: center; gap: 12px; }
+
+.toggle-label {
+    font-size: 15px;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #222;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: 0.25s;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    bottom: 3px;
+    background: #aaaaaa;
+    border-radius: 50%;
+    transition: 0.25s;
+}
+
+.toggle-switch input:checked + .slider {
+    background: rgba(255, 42, 42, 0.25);
+    border-color: #ff2a2a;
+}
+
+.toggle-switch input:checked + .slider:before {
+    transform: translateX(20px);
+    background: #ff2a2a;
+}
+
+/* Grid builder */
+.grid-section { display: flex; flex-direction: column; gap: 10px; }
+
+.grid-section-label {
+    font-size: 15px;
+    color: #ffffff;
+    letter-spacing: 1px;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.grid-list { display: flex; flex-direction: column; gap: 8px; }
+
+.grid-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.grid-pos {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: #ff2a2a;
+    width: 24px;
+    flex-shrink: 0;
+    letter-spacing: 1px;
+}
+
+.grid-row select {
+    flex: 1;
+    background: #0d0d0d;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #fff;
+}
+
+.grid-row input[type="number"] {
+    width: 80px;
+    background: #0d0d0d;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+.grid-pts-label {
+    font-size: 11px;
+    color: #ffffff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Orbitron', sans-serif;
+    width: 30px;
+    flex-shrink: 0;
+}
+
+/* Button */
+.check-btn {
+    background: #ff2a2a;
+    border: 2px solid #ff2a2a;
+    color: white;
+    padding: 12px 40px;
+    font-size: 16px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    box-shadow: 0 0 20px rgba(255, 42, 42, 0.3);
+    margin-top: 20px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.check-btn:hover {
+    background: transparent;
+    color: #ff2a2a;
+    box-shadow: 0 0 30px rgba(255, 42, 42, 0.5);
+    transform: scale(1.03);
+}
+
+#loading-msg {
+    color: #ffffff;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 20px;
+    animation: pulse 1s infinite;
+    font-family: 'Orbitron', sans-serif;
+    display: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+#error-msg {
+    color: #ff4444;
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    display: none;
+}
+
+/* Layout */
+.page-layout { display: flex; gap: 40px; align-items: flex-start; }
+.left-panel { width: 520px; flex-shrink: 0; }
+.right-panel { flex: 1; min-width: 0; }
+
+/* Dual gauges */
+.gauges-row { display: flex; gap: 24px; margin-bottom: 30px; flex-wrap: wrap; }
+.gauge-wrap { flex: 1; min-width: 180px; }
+
+.gauge-container {
+    position: relative;
+    width: 100%;
+    max-width: 260px;
+    margin: 0 auto 8px auto;
+}
+
+.gauge-center {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.gauge-center h2 {
+    font-size: 36px;
+    font-family: 'Orbitron', sans-serif;
+    border: none;
+    padding: 0;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.gauge-center p {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Orbitron', sans-serif;
+    color: #ffffff;
+}
+
+.gauge-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #cccccc;
+    font-family: 'Orbitron', sans-serif;
+    margin-top: 4px;
+}
+
+/* Action cards */
+.action-cards { display: flex; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
+
+.action-card {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 2px solid #ff2a2a;
+    border-radius: 10px;
+    padding: 20px 24px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.action-card p {
+    color: #cccccc;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.action-card h2 {
+    color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 1px;
+    font-family: 'Orbitron', sans-serif;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Risk factors */
+.factors-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
+
+.factor-item {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.factor-left { display: flex; flex-direction: column; gap: 2px; }
+
+.factor-name {
+    color: #ffffff;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+}
+
+.factor-explanation {
+    color: #cccccc;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.factor-contribution {
+    font-size: 14px;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+/* High risk drivers */
+.drivers-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+
+.driver-badge {
+    background: rgba(255, 42, 42, 0.15);
+    border: 1px solid rgba(255, 42, 42, 0.5);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #ff2a2a;
+}
+
+.no-risk-note {
+    color: #cccccc;
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-style: italic;
+}
+
+/* Recommendations */
+.recs-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
+
+.rec-item {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 3px solid #ff2a2a;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.input-hint {
+    font-size: 11px;
+    color: #cccccc;
+    letter-spacing: 0.5px;
+}
+
+.bg-image {
+    position: fixed;
+    inset: 0;
+    background-image: url('../image_folder/all_pages.bg.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+}
+
+.bg-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+}
+
+@media (max-width: 1200px) {
+    .page-layout { flex-direction: column; }
+    .left-panel { width: 100%; }
+}
+
+@media (max-width: 768px) {
+    .action-cards { flex-direction: column; }
+    .gauges-row { flex-direction: column; }
+}
+@media (max-width: 480px) {
+    body { padding: 16px; }
+    h1 { font-size: 18px; letter-spacing: 1px; }
+    form { padding: 20px; }
+    .left-panel { width: 100%; }
+    .grid-row { flex-wrap: wrap; gap: 8px; }
+    .grid-row select { min-width: 100px; }
+    .grid-row input[type="number"] { width: 60px; }
+    .gauge-center h2 { font-size: 26px; }
+    .action-card { min-width: unset; width: 100%; }
+    .check-btn { width: 100%; padding: 12px 20px; font-size: 13px; letter-spacing: 2px; }
+    .factor-item { flex-direction: column; align-items: flex-start; }
+    .rec-item { font-size: 13px; }
+}
+
+@media (max-width: 360px) {
+    h1 { font-size: 15px; }
+    .grid-pos { font-size: 11px; }
+    .grid-pts-label { font-size: 9px; }
+    .gauge-center h2 { font-size: 22px; }
+    .action-card h2 { font-size: 15px; }
+    .factor-name { font-size: 12px; }
+}
+.loading-spinner {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+
+    border-radius: 50%;
+    border: 4px solid rgba(192, 192, 192, 0.15);
+    border-top-color: silver;
+
+    box-shadow:
+        0 0 6px rgba(192, 192, 192, 0.9),
+        0 0 14px rgba(192, 192, 192, 0.6),
+        0 0 24px rgba(192, 192, 192, 0.3);
+
+    animation: gridx-spin 0.75s linear infinite;
+}
+
+@keyframes gridx-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

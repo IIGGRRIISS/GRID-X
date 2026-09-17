@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GRID-X | Chassis Viewer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+:root{--red:#e8001d;--red3:rgba(232,0,29,0.10);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+body{font-family:'Barlow Condensed',sans-serif;color:#fff;}
+#cv{position:fixed;inset:0;z-index:2;cursor:grab;}
+#cv:active{cursor:grabbing;}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:18px 32px;background:linear-gradient(to bottom,rgba(0,0,0,0.85)0%,transparent 100%);}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.1rem;letter-spacing:0.22em;color:#fff;text-decoration:none;}
+.logo em{color:var(--red);font-style:normal;}
+.page-tag-wrap{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none;}
+.page-tag{font-family:'Share Tech Mono',monospace;font-size:larger;letter-spacing:0.28em;color:rgba(255,255,255,0.45);text-transform:uppercase;border:1px solid rgba(232,0,29,0.25);padding:5px 13px;white-space:nowrap;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
+.live-txt{font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);}
+.side-panel{position:fixed;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:8px;width:210px;opacity:0;transition:opacity 0.8s ease;}
+.side-panel.vis{opacity:1;}
+#panel-left{left:16px;}
+#panel-right{right:16px;}
+.stat-box{
+  position:relative;
+  background:linear-gradient(135deg,rgba(12,0,0,0.88) 0%,rgba(4,0,0,0.94) 100%);
+  border:1px solid rgba(232,0,29,0.18);
+  padding:11px 14px 10px 14px;
+  overflow:hidden;
+  box-shadow:0 0 18px rgba(232,0,29,0.06),inset 0 1px 0 rgba(255,255,255,0.04);
+  transition:box-shadow 0.3s ease;
+}
+.stat-box:hover{box-shadow:0 0 28px rgba(232,0,29,0.16),inset 0 1px 0 rgba(255,255,255,0.06);}
+.stat-box::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.18) 3px,rgba(0,0,0,0.18) 4px);
+  pointer-events:none;z-index:1;
+}
+.stat-box::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom,transparent 0%,var(--red) 30%,var(--red) 70%,transparent 100%);
+  box-shadow:0 0 8px var(--red),0 0 16px rgba(232,0,29,0.4);
+  animation:barPulse 3s ease-in-out infinite;
+}
+#panel-right .stat-box::after{left:auto;right:0;}
+@keyframes barPulse{0%,100%{opacity:0.5;transform:scaleY(0.7);}50%{opacity:1;transform:scaleY(1);}}
+.stat-box .corners{position:absolute;inset:0;pointer-events:none;z-index:2;}
+.stat-box .corners::before,.stat-box .corners::after{content:'';position:absolute;width:7px;height:7px;}
+.stat-box .corners::before{top:0;left:0;border-top:1.5px solid rgba(232,0,29,0.7);border-left:1.5px solid rgba(232,0,29,0.7);}
+.stat-box .corners::after{bottom:0;right:0;border-bottom:1.5px solid rgba(232,0,29,0.7);border-right:1.5px solid rgba(232,0,29,0.7);}
+.stat-box .corners2{position:absolute;inset:0;pointer-events:none;z-index:2;}
+.stat-box .corners2::before,.stat-box .corners2::after{content:'';position:absolute;width:7px;height:7px;}
+.stat-box .corners2::before{top:0;right:0;border-top:1.5px solid rgba(232,0,29,0.35);border-right:1.5px solid rgba(232,0,29,0.35);}
+.stat-box .corners2::after{bottom:0;left:0;border-bottom:1.5px solid rgba(232,0,29,0.35);border-left:1.5px solid rgba(232,0,29,0.35);}
+.stat-box .sig{position:absolute;top:7px;right:9px;z-index:3;width:5px;height:5px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);animation:sigBlink 2.4s ease-in-out infinite;}
+@keyframes sigBlink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.2;transform:scale(0.7);}}
+.stat-content{position:relative;z-index:3;}
+.stat-key{font-family:'Share Tech Mono',monospace;font-size:1rem;letter-spacing:0.24em;color:rgba(232,0,29,0.75);text-transform:uppercase;margin-bottom:6px;font-weight:600;padding-bottom:4px;border-bottom:1px solid rgba(232,0,29,0.10);}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:2.3rem;font-weight:700;color:#fff;line-height:1;display:flex;align-items:baseline;gap:5px;text-shadow:0 0 20px rgba(255,255,255,0.15);}
+.stat-val span{font-size:0.9rem;font-family:'Share Tech Mono',monospace;color:rgba(255,255,255,0.42);font-weight:400;letter-spacing:0.08em;}
+.stat-sub{font-family:'Share Tech Mono',monospace;font-size:0.57rem;color:rgba(255,255,255,0.28);margin-top:5px;letter-spacing:0.08em;}
+.stat-box.hero{border-color:rgba(232,0,29,0.30);background:linear-gradient(135deg,rgba(20,0,0,0.92) 0%,rgba(8,0,0,0.96) 100%);box-shadow:0 0 28px rgba(232,0,29,0.10),inset 0 1px 0 rgba(255,80,80,0.06);}
+.stat-box.hero .stat-val{font-size:4rem;text-shadow:0 0 30px rgba(255,60,60,0.25);}
+.stat-box.hero::after{background:linear-gradient(to bottom,transparent 0%,var(--red) 20%,var(--red) 80%,transparent 100%);box-shadow:0 0 12px var(--red),0 0 24px rgba(232,0,29,0.5);}
+#viewBtn,#closeBtn{
+  position:fixed;bottom:60px;left:50%;transform:translateX(-50%);
+  z-index:25;padding:14px 44px;white-space:nowrap;
+  font-family:'Orbitron',sans-serif;font-size:0.68rem;font-weight:700;
+  letter-spacing:0.24em;text-transform:uppercase;cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,100% calc(100% - 10px),calc(100% - 10px) 100%,0% 100%,0% 10px);
+  opacity:0;pointer-events:none;transition:background .2s,box-shadow .2s,opacity .6s ease .5s;
+}
+#viewBtn{background:var(--red3);border:1px solid var(--red);color:#fff;}
+#closeBtn{background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);}
+#viewBtn.vis,#closeBtn.vis{opacity:1;pointer-events:auto;}
+#viewBtn:hover:not(:disabled){background:rgba(232,0,29,0.18);box-shadow:0 0 28px rgba(232,0,29,0.25);}
+#closeBtn:hover{border-color:var(--red);color:#fff;}
+#viewBtn:disabled,#closeBtn:disabled{opacity:0.3;cursor:not-allowed;}
+#hint{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);z-index:20;font-family:'Share Tech Mono',monospace;font-size:large;letter-spacing:0.25em;color:rgba(255,255,255,0.35);text-transform:uppercase;display:flex;align-items:center;gap:12px;font-weight:600;opacity:1;transition:opacity 1.5s ease;pointer-events:none;white-space:nowrap;}
+#hint.gone{opacity:0;}
+#hint::before,#hint::after{content:'';width:20px;height:1px;background:rgba(255,255,255,0.12);}
+#loader{position:fixed;inset:0;z-index:999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 1s ease;}
+.ll{font-family:'Orbitron',sans-serif;font-size:1.9rem;font-weight:900;letter-spacing:0.3em;color:#fff;}
+.ll em{color:var(--red);font-style:normal;}
+.lt{width:220px;height:2px;background:rgba(232,0,29,0.12);overflow:hidden;}
+.lf{height:100%;width:0%;background:var(--red);box-shadow:0 0 10px var(--red);transition:width .12s linear;}
+.ls{font-family:'Share Tech Mono',monospace;font-size:0.64rem;letter-spacing:0.22em;color:rgba(255,255,255,0.4);text-transform:uppercase;}
+#zoom-hint{position:fixed;bottom:122px;right:24px;z-index:20;font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.18em;color:rgba(255,255,255,0.22);text-transform:uppercase;pointer-events:none;}
+@media(max-width:700px){#panel-left,#panel-right,.page-tag-wrap{display:none;}}
+#bottom-bar{position:fixed;bottom:0;left:0;right:0;height:34px;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;gap:28px;z-index:30;font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;}
+.bb-item{color:rgba(255,255,255,0.35);}
+.bb-item span{color:var(--red);font-size:0.85rem;font-weight:600;}
+</style>
+</head>
+<body>
+<div id="loader">
+  <div class="ll">GRID<em>-X</em></div>
+  <div class="lt"><div class="lf" id="lf"></div></div>
+  <div class="ls" id="ls">Initialising chassis…</div>
+</div>
+<canvas id="cv"></canvas>
+<div id="topbar">
+  <a href="index.html" class="logo">GRID<em>-X</em></a>
+  <div class="page-tag-wrap"><div class="page-tag">CHASSIS VIEWER</div></div>
+  <div style="display:flex;align-items:center;gap:9px;"><div class="dot"></div><span class="live-txt">LIVE</span></div>
+</div>
+<div id="panel-left" class="side-panel">
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Halo Material</div><div class="stat-val">Ti<span>Titanium</span></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Front Wing Span</div><div class="stat-val">2000<span>mm</span></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Suspension</div><div class="stat-val" style="font-size:1rem;">Push<span style="font-size:.75rem"> / Pull rod</span></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Min. Weight</div><div class="stat-val">800<span>kg</span></div></div>
+  </div>
+  <div class="stat-box hero">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Total Power Output</div><div class="stat-val">1,000<span>bhp</span></div><div class="stat-sub">1.6L V6 Hybrid · MGU-K + MGU-H</div></div>
+  </div>
+</div>
+<div id="panel-right" class="side-panel">
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Rear Wing Span</div><div class="stat-val">950<span>mm</span></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Engine</div><div class="stat-val" style="font-size:1rem;">1.6<span>L V6 Turbo</span></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Max RPM</div><div class="stat-val">15,000<span>rpm</span></div></div>
+  </div>
+  <div class="stat-box">
+    <div class="corners"></div><div class="corners2"></div><div class="sig"></div>
+    <div class="stat-content"><div class="stat-key">Rear Tyre Width</div><div class="stat-val">405<span>mm</span></div></div>
+  </div>
+</div>
+<div id="hint">Drag to rotate · Scroll to zoom</div>
+<div id="zoom-hint">scroll ↑↓ zoom</div>
+<button id="viewBtn">Inspect Chassis</button>
+<button id="closeBtn">← Back</button>
+<div id="bottom-bar">
+  <div class="bb-item">Chassis <span>FIA-2026</span></div>
+  <div class="bb-item">Reg Class <span>Formula One</span></div>
+  <div class="bb-item">Power Unit <span>1.6L V6 Hybrid</span></div>
+  <div class="bb-item">Downforce <span>3.5× Body Weight</span></div>
+  <div class="bb-item">Wheelbase <span>3700mm</span></div>
+  <div class="bb-item">Grid-X <span>Analytics</span></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+/* ─────────────────────────────────────────────
+   GRID-X  |  Chassis Viewer  |  V6 Engine Rev3
+   Realistic F1 1.6 V6 Turbo-Hybrid geometry
+   + smooth open/close transitions
+───────────────────────────────────────────── */
+
+/* ── LOADER ── */
+const loaderEl=document.getElementById('loader'),lfEl=document.getElementById('lf'),lsEl=document.getElementById('ls');
+let fakeP=10,fakeT;
+function setP(p,m){lfEl.style.width=p+'%';if(m)lsEl.textContent=m;}
+
+/* ── RENDERER ── */
+const canvas=document.getElementById('cv');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.25;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+
+/* ── SCENE / CAMERA ── */
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x000000);
+const camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,100);
+let zoomR=9;
+function updateCamera(){camera.position.set(0,1.5,zoomR);camera.lookAt(0,0.5,0);}
+updateCamera();
+
+/* ── LIGHTING ── */
+scene.add(new THREE.AmbientLight(0xffffff,0.55));
+
+const keyL=new THREE.DirectionalLight(0xfff4e0,4.2);
+keyL.position.set(-5,10,6);keyL.castShadow=true;
+keyL.shadow.mapSize.set(2048,2048);
+keyL.shadow.camera.left=-8;keyL.shadow.camera.right=8;
+keyL.shadow.camera.top=6;keyL.shadow.camera.bottom=-6;
+scene.add(keyL);
+
+/* ── FIX: set position directly instead of Object.assign ── */
+const fillL=new THREE.DirectionalLight(0xc0d8ff,2.0);
+fillL.position.set(6,4,-3);
+scene.add(fillL);
+
+const rimL=new THREE.DirectionalLight(0xffffff,1.8);
+rimL.position.set(0,2,-9);
+scene.add(rimL);
+
+const redPt=new THREE.PointLight(0xe8001d,0.4,10);
+redPt.position.set(0,-1.5,2);
+scene.add(redPt);
+
+const spotL=new THREE.SpotLight(0xffffff,2.5,22,Math.PI/3.5,0.35);
+spotL.position.set(0,10,2);spotL.castShadow=true;spotL.shadow.mapSize.set(1024,1024);scene.add(spotL);
+/* Engine bay illumination lights */
+const engFill=new THREE.PointLight(0xff8844,0,5);scene.add(engFill);   /* warm fill */
+const engRim =new THREE.PointLight(0x4488ff,0,4);scene.add(engRim);    /* cool MGU rim */
+
+/* ── FLOOR ── */
+const floorMesh=new THREE.Mesh(new THREE.CircleGeometry(12,64),new THREE.MeshBasicMaterial({color:0x000000}));
+floorMesh.rotation.x=-Math.PI/2;
+floorMesh.position.y=-0.02;
+scene.add(floorMesh);
+
+const innerFloor=new THREE.Mesh(new THREE.CircleGeometry(2.98,64),new THREE.MeshBasicMaterial({color:0xffffff}));
+innerFloor.rotation.x=-Math.PI/2;innerFloor.position.y=-0.001;scene.add(innerFloor);
+const ring=new THREE.Mesh(new THREE.RingGeometry(3.0,3.25,64),new THREE.MeshBasicMaterial({color:0x8b0000,side:THREE.DoubleSide}));
+ring.rotation.x=-Math.PI/2;ring.position.y=0.003;scene.add(ring);
+
+/* ── CAR PIVOT ── */
+const pivot=new THREE.Group();scene.add(pivot);
+const COVER_NAMES=new Set(['BODY_24','shark_43','EXHAUST_100','stickers_170','ACFL_CAMERA_223','pack_leds.001_107','RAINLEDS_104']);
+let carLoaded=false,coverObjs=[],coverOrigY=[],coverOrigScale=[];
+
+/* ════════════════════════════════════════════════════════════
+   F1  1.6L  90° V6  TURBO-HYBRID  ENGINE  ASSEMBLY
+   Reference: Mercedes PU106 / Ferrari 066 / Honda RA621H
+   
+   Layout (engine viewed from above, rear at -Z):
+     · Block + 2 cylinder banks angled 90° apart
+     · Intake plenum in the V between banks
+     · Single turbo rear-mounted (Mercedes layout)
+     · MGU-H on turbo shaft
+     · MGU-K on crank snout (front)
+     · ERS battery pods flanking gearbox
+     · Exhaust exits single pipe above gearbox
+════════════════════════════════════════════════════════════ */
+const EG=new THREE.Group();
+EG.visible=false;
+pivot.add(EG);
+
+/* ─── MATERIAL LIBRARY ─── */
+/* Engine aluminium / casting */
+const mCast=new THREE.MeshStandardMaterial({color:0x1a1a1a,metalness:0.88,roughness:0.28});
+/* Machined aluminium bright */
+const mAlu=new THREE.MeshStandardMaterial({color:0x787878,metalness:0.95,roughness:0.08});
+/* Polished stainless */
+const mSS=new THREE.MeshStandardMaterial({color:0xb0b0b0,metalness:0.98,roughness:0.04});
+/* Carbon fibre (cam covers, airbox) */
+const mCF=new THREE.MeshStandardMaterial({color:0x101010,metalness:0.15,roughness:0.55});
+/* Exhaust inconel – glows orange-red when hot */
+const mExh=new THREE.MeshStandardMaterial({color:0x5c1e00,metalness:0.55,roughness:0.45,
+  emissive:new THREE.Color(0xff3300),emissiveIntensity:0});
+/* Turbo housing – dark metal */
+const mTurb=new THREE.MeshStandardMaterial({color:0x1e1e1e,metalness:0.96,roughness:0.06});
+/* Compressor/turbine wheel – bright alloy */
+const mWheel=new THREE.MeshStandardMaterial({color:0xdddddd,metalness:0.97,roughness:0.03});
+/* MGU-H – deep navy, blue emissive */
+const mMGUh=new THREE.MeshStandardMaterial({color:0x001020,metalness:0.7,roughness:0.38,
+  emissive:new THREE.Color(0x0066ff),emissiveIntensity:0});
+/* MGU-K – same but slightly different shade */
+const mMGUk=new THREE.MeshStandardMaterial({color:0x001828,metalness:0.7,roughness:0.35,
+  emissive:new THREE.Color(0x0044ee),emissiveIntensity:0});
+/* ERS battery – dark with red glow */
+const mERS=new THREE.MeshStandardMaterial({color:0x000000,metalness:0.3,roughness:0.65,
+  emissive:new THREE.Color(0xff1100),emissiveIntensity:0});
+/* Coolant pipe – grey rubber/alloy */
+const mPipe=new THREE.MeshStandardMaterial({color:0x444444,metalness:0.7,roughness:0.35});
+/* Intake rubber – matte black */
+const mRub=new THREE.MeshStandardMaterial({color:0x080808,metalness:0.1,roughness:0.85});
+/* Valve/bolt hardware */
+const mBolt=new THREE.MeshStandardMaterial({color:0x999999,metalness:0.95,roughness:0.12});
+/* Red accent (F1 wiring, heat shielding) */
+const mAccent=new THREE.MeshStandardMaterial({color:0xcc0000,metalness:0.3,roughness:0.6});
+
+/* ─── HELPER: add mesh to EG ─── */
+function em(geo,mat,x,y,z,rx,ry,rz,sx,sy,sz){
+  const m=new THREE.Mesh(geo,mat);
+  m.position.set(x,y,z);
+  if(rx!=null)m.rotation.x=rx;
+  if(ry!=null)m.rotation.y=ry;
+  if(rz!=null)m.rotation.z=rz;
+  if(sx!=null)m.scale.set(sx,sy??sx,sz??sx);
+  m.castShadow=true;m.receiveShadow=true;
+  EG.add(m);return m;
+}
+/* tube helper – CylinderGeometry aligned along Z */
+function tube(r,len,segs){return new THREE.CylinderGeometry(r,r,len,segs??12);}
+/* box */
+function box(w,h,d){return new THREE.BoxGeometry(w,h,d);}
+/* disk */
+function disk(r,t,s){return new THREE.CylinderGeometry(r,r,t,s??16);}
+
+/* ═══════════════════
+   1. CRANKCASE / BLOCK
+   Deep V silhouette. Taller block to expose the valley.
+   Triangular front face with belt drive visible.
+═══════════════════ */
+/* Main block — taller, narrower at top to form V wedge */
+em(box(0.52,0.30,0.76),mCast,  0, 0.00, 0);
+/* Lower sump — steps out slightly like cast aluminium */
+em(box(0.56,0.06,0.74),mCast,  0,-0.178,0);
+em(box(0.54,0.04,0.70),mAlu,   0,-0.220,0);  /* machined sump rail */
+em(box(0.50,0.03,0.66),mAlu,   0,-0.250,0);  /* sump pan */
+
+/* Sump drain bolt */
+em(disk(0.018,0.028),mBolt, 0,-0.268,0.20, Math.PI/2);
+
+/* Crankcase stud rows both sides — tight spacing like real block */
+for(let i=-3;i<=3;i++){
+  em(disk(0.014,0.022),mBolt, -0.265,0.0+i*0.072, 0, 0,0,Math.PI/2);
+  em(disk(0.014,0.022),mBolt,  0.265,0.0+i*0.072, 0, 0,0,Math.PI/2);
+}
+/* Block face cast ribs (vertical stiffeners) */
+for(let i=-2;i<=2;i++){
+  em(box(0.008,0.28,0.018),mCast, -0.262,0.0,i*0.14);
+  em(box(0.008,0.28,0.018),mCast,  0.262,0.0,i*0.14);
+}
+
+/* ─── FRONT BELT / PULLEY DRIVE (visible triangular silhouette) ─── */
+/* Crank pulley — large, front of block */
+em(disk(0.075,0.040,24),mAlu,   0,-0.04, 0.42, Math.PI/2);
+em(disk(0.058,0.012,24),mCast,  0,-0.04, 0.44, Math.PI/2); /* hub */
+/* Pulley groove ring */
+em(new THREE.TorusGeometry(0.065,0.007,6,24),mAlu, 0,-0.04,0.422);
+/* Accessory pulley top-left (alternator) */
+em(disk(0.038,0.032,20),mAlu,  -0.19, 0.16, 0.42, Math.PI/2);
+em(new THREE.TorusGeometry(0.030,0.006,6,20),mAlu, -0.19,0.16,0.422);
+/* Accessory pulley top-right (water pump) */
+em(disk(0.042,0.032,20),mAlu,   0.16, 0.18, 0.42, Math.PI/2);
+em(new THREE.TorusGeometry(0.034,0.006,6,20),mAlu,  0.16,0.18,0.422);
+/* Idler pulley centre */
+em(disk(0.024,0.028,16),mSS,    0.02, 0.07, 0.42, Math.PI/2);
+
+/* Belt — flat band connecting the three pulleys, drawn as thin strips */
+function beltStrip(x1,y1,x2,y2,zPos,w){
+  const cx=(x1+x2)/2, cy=(y1+y2)/2;
+  const len=Math.sqrt((x2-x1)**2+(y2-y1)**2);
+  const ang=Math.atan2(y2-y1,x2-x1);
+  const bm=new THREE.Mesh(new THREE.BoxGeometry(len,w,0.008),
+    new THREE.MeshStandardMaterial({color:0x111111,metalness:0.05,roughness:0.90}));
+  bm.position.set(cx,cy,zPos);bm.rotation.z=ang;EG.add(bm);
+}
+beltStrip( 0.00,-0.04,-0.19, 0.16,  0.38,0.018); /* crank→water pump */
+beltStrip( 0.00,-0.04,-0.19, 0.16,  0.38,0.018);
+beltStrip(-0.19, 0.16, 0.16, 0.18,  0.38,0.018); /* alt→water pump */
+beltStrip( 0.00,-0.04,-0.19,-0.04,  0.38,0.018); /* crank→idler */
+
+/* ═══════════════════
+   2. CYLINDER BANKS  (90° Vee)
+   Wider heads, prominent cam covers with individual bolt caps.
+   Deep V valley fully exposed between banks.
+═══════════════════ */
+const BANK_ANGLE=Math.PI/4;
+const CYL_SPACING=0.195;
+
+/* Valley floor — visible between banks */
+em(box(0.14,0.015,0.70),mAlu, 0,0.265,0);   /* machined valley plate */
+em(box(0.10,0.010,0.68),mCast,0,0.255,0);   /* valley gasket shadow */
+
+for(let side=-1;side<=1;side+=2){
+  /* ── Bank body — LatheGeometry-style stepped barrel ── */
+  for(let i=0;i<3;i++){
+    const z=(i-1)*CYL_SPACING;
+    const xOff=side*0.10, yOff=0.22;
+
+    /* Lower cylinder barrel — slightly stepped (wider at base) */
+    const b1=new THREE.Mesh(new THREE.CylinderGeometry(0.076,0.084,0.18,16),mCast);
+    b1.position.set(xOff*1.55,yOff-0.07,z);
+    b1.rotation.z=-side*BANK_ANGLE;b1.castShadow=true;EG.add(b1);
+
+    /* Upper barrel — tighter bore */
+    const b2=new THREE.Mesh(new THREE.CylinderGeometry(0.068,0.076,0.18,16),mCast);
+    b2.position.set(xOff*1.72,yOff+0.06,z);
+    b2.rotation.z=-side*BANK_ANGLE;b2.castShadow=true;EG.add(b2);
+
+    /* ── Cylinder head — wider, more prominent ── */
+    const hxOff=side*0.265, hyOff=0.355;
+    const hd=new THREE.Mesh(box(0.175,0.065,0.175),mCast);
+    hd.position.set(hxOff,hyOff,z);EG.add(hd);
+
+    /* Head gasket line */
+    const hg=new THREE.Mesh(box(0.178,0.004,0.178),
+      new THREE.MeshStandardMaterial({color:0x333333,metalness:0.6,roughness:0.5}));
+    hg.position.set(hxOff,hyOff-0.035,z);EG.add(hg);
+
+    /* ── Cam cover — full-width aluminium + colour accent ── */
+    /* Base cover body */
+    const cc=new THREE.Mesh(box(0.162,0.038,0.168),mAlu);
+    cc.position.set(hxOff,hyOff+0.055,z);EG.add(cc);
+    /* Cover raised centre rib */
+    const ccRib=new THREE.Mesh(box(0.060,0.012,0.164),mAlu);
+    ccRib.position.set(hxOff,hyOff+0.076,z);EG.add(ccRib);
+    /* Cam cover edge lip */
+    const ccLip=new THREE.Mesh(box(0.168,0.006,0.174),mAlu);
+    ccLip.position.set(hxOff,hyOff+0.036,z);EG.add(ccLip);
+
+    /* ── Cam cover bolts — 6 per cover (like reference image) ── */
+    /* Green anodised bolt caps — signature detail */
+    const mBoltGreen=new THREE.MeshStandardMaterial({color:0x1a4a1a,metalness:0.7,roughness:0.25});
+    const boltZPositions=[-0.068,-0.022,0.022,0.068];
+    boltZPositions.forEach(bz=>{
+      const bcap=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.018,8),mBoltGreen);
+      bcap.position.set(hxOff,hyOff+0.078,bz);
+      bcap.rotation.z=side*BANK_ANGLE;EG.add(bcap);
+      /* bolt hex socket top */
+      const bsoc=new THREE.Mesh(new THREE.CylinderGeometry(0.007,0.007,0.006,6),mBolt);
+      bsoc.position.set(hxOff+side*0.004,hyOff+0.090,bz);
+      bsoc.rotation.z=side*BANK_ANGLE;EG.add(bsoc);
+    });
+
+    /* ── Exhaust port stub — wide rectangular flange ── */
+    const efx=side*0.285, efy=hyOff+0.010;
+    em(box(0.018,0.062,0.080),mAlu, efx,efy,z);
+    /* Port studs × 4 */
+    [[-0.026,-0.024],[0.026,-0.024],[-0.026,0.024],[0.026,0.024]].forEach(([dz,dy])=>{
+      em(disk(0.006,0.028,6),mBolt, efx+side*0.010,efy+dy,z+dz, 0,0,Math.PI/2);
+    });
+  }
+}
+
+/* ═══════════════════
+   3. INDIVIDUAL THROTTLE BODIES  (ITB stack)
+   The most visually distinctive element in the reference image.
+   6 tall stacks — 3 per bank — with velocity stacks on top.
+   Each stack: throttle body barrel + velocity stack trumpet.
+═══════════════════ */
+/* Plenum / intake manifold base running between banks */
+em(box(0.18,0.055,0.64),mAlu, 0,0.262,0);   /* lower manifold */
+em(box(0.14,0.020,0.60),mCF,  0,0.292,0);   /* CF cover strip */
+
+/* Polished aluminium ITB material */
+const mITB=new THREE.MeshStandardMaterial({color:0xaaaaaa,metalness:0.92,roughness:0.06});
+/* Velocity stack trumpet material — highly polished */
+const mVS=new THREE.MeshStandardMaterial({color:0xcccccc,metalness:0.97,roughness:0.03});
+/* Throttle shaft – black anodised */
+const mThrottle=new THREE.MeshStandardMaterial({color:0x0a0a0a,metalness:0.6,roughness:0.4});
+
+for(let side=-1;side<=1;side+=2){
+  for(let i=0;i<3;i++){
+    const z=(i-1)*CYL_SPACING;
+    const tx=side*0.062;   /* inward of cam cover */
+    const ty_base=0.292;   /* sits on manifold plate */
+
+    /* ── Throttle body barrel ── */
+    const tb=new THREE.Mesh(new THREE.CylinderGeometry(0.030,0.032,0.120,16),mITB);
+    tb.position.set(tx,ty_base+0.060,z);EG.add(tb);
+
+    /* Throttle body lower flange (bolts to manifold) */
+    const tbf=new THREE.Mesh(box(0.075,0.010,0.072),mAlu);
+    tbf.position.set(tx,ty_base+0.000,z);EG.add(tbf);
+    /* Flange bolts × 4 */
+    [[-0.028,-0.028],[0.028,-0.028],[-0.028,0.028],[0.028,0.028]].forEach(([dx,dz2])=>{
+      em(disk(0.005,0.012,6),mBolt, tx+dx,ty_base+0.007,z+dz2, Math.PI/2);
+    });
+
+    /* Throttle shaft stub — visible through barrel opening */
+    const ts=new THREE.Mesh(new THREE.CylinderGeometry(0.004,0.004,0.076,8),mThrottle);
+    ts.position.set(tx,ty_base+0.060,z);ts.rotation.z=Math.PI/2;EG.add(ts);
+
+    /* Mid-section connector ring */
+    em(new THREE.TorusGeometry(0.030,0.005,6,16),mITB, tx,ty_base+0.088,z);
+
+    /* ── Velocity stack trumpet ── */
+    /* The characteristic flared bell mouth visible in the reference */
+    const vs=new THREE.Mesh(new THREE.CylinderGeometry(0.040,0.028,0.055,20),mVS);
+    vs.position.set(tx,ty_base+0.148,z);EG.add(vs);
+    /* Trumpet flare lip */
+    const vsLip=new THREE.Mesh(new THREE.CylinderGeometry(0.044,0.040,0.010,20),mVS);
+    vsLip.position.set(tx,ty_base+0.173,z);EG.add(vsLip);
+    /* Mesh screen inside stack (dark disc) */
+    em(disk(0.026,0.004,16),mThrottle, tx,ty_base+0.176,z, Math.PI/2);
+  }
+}
+
+/* ═══════════════════
+   4. EXHAUST HEADERS  (sweeping polished stainless)
+   Reference shows large-diameter, highly polished primaries
+   sweeping DOWN and OUT from each port then merging.
+   CatmullRomCurve3 per primary for realistic swept bends.
+═══════════════════ */
+/* Polished stainless primary pipe */
+const mHdr=new THREE.MeshStandardMaterial({color:0xd8d8d8,metalness:0.97,roughness:0.04});
+/* Collector cone — slightly darker/blued */
+const mCollect=new THREE.MeshStandardMaterial({color:0xa0a0a0,metalness:0.94,roughness:0.08});
+
+function header(pts,r,mat){
+  const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)));
+  const geo=new THREE.TubeGeometry(curve,pts.length*8,r,10,false);
+  const m=new THREE.Mesh(geo,mat);m.castShadow=true;EG.add(m);return m;
+}
+
+/* Left bank — 3 primaries sweeping down and rearward */
+header([
+  [-0.285, 0.365,  0.195],  /* port exit */
+  [-0.310, 0.290,  0.180],  /* sweep outward */
+  [-0.340, 0.180,  0.140],  /* drop down */
+  [-0.340, 0.060, -0.040],  /* run rearward under block */
+  [-0.310,-0.040, -0.180],  /* converge toward collector */
+  [-0.260,-0.060, -0.320],
+], 0.026, mHdr);
+
+header([
+  [-0.285, 0.365,  0.000],
+  [-0.320, 0.280, -0.010],
+  [-0.345, 0.160, -0.020],
+  [-0.340, 0.040, -0.120],
+  [-0.310,-0.042, -0.260],
+  [-0.260,-0.060, -0.320],
+], 0.026, mHdr);
+
+header([
+  [-0.285, 0.365, -0.195],
+  [-0.315, 0.285, -0.210],
+  [-0.340, 0.165, -0.220],
+  [-0.338, 0.040, -0.270],
+  [-0.310,-0.044, -0.310],
+  [-0.260,-0.060, -0.320],
+], 0.026, mHdr);
+
+/* Left 3-into-1 collector cone */
+em(new THREE.CylinderGeometry(0.026,0.058,0.080,12),mCollect, -0.258,-0.062,-0.360, Math.PI/2);
+/* Left collector exit pipe to merge */
+header([
+  [-0.260,-0.060,-0.400],
+  [-0.180,-0.058,-0.430],
+  [-0.060,-0.054,-0.440],
+  [ 0.000,-0.052,-0.440],
+], 0.040, mCollect);
+
+/* Right bank — mirror */
+header([
+  [ 0.285, 0.365,  0.195],
+  [ 0.310, 0.290,  0.180],
+  [ 0.340, 0.180,  0.140],
+  [ 0.340, 0.060, -0.040],
+  [ 0.310,-0.040, -0.180],
+  [ 0.260,-0.060, -0.320],
+], 0.026, mHdr);
+
+header([
+  [ 0.285, 0.365,  0.000],
+  [ 0.320, 0.280, -0.010],
+  [ 0.345, 0.160, -0.020],
+  [ 0.340, 0.040, -0.120],
+  [ 0.310,-0.042, -0.260],
+  [ 0.260,-0.060, -0.320],
+], 0.026, mHdr);
+
+header([
+  [ 0.285, 0.365, -0.195],
+  [ 0.315, 0.285, -0.210],
+  [ 0.340, 0.165, -0.220],
+  [ 0.338, 0.040, -0.270],
+  [ 0.310,-0.044, -0.310],
+  [ 0.260,-0.060, -0.320],
+], 0.026, mHdr);
+
+/* Right collector */
+em(new THREE.CylinderGeometry(0.026,0.058,0.080,12),mCollect,  0.258,-0.062,-0.360, Math.PI/2);
+header([
+  [ 0.260,-0.060,-0.400],
+  [ 0.180,-0.058,-0.430],
+  [ 0.060,-0.054,-0.440],
+  [ 0.000,-0.052,-0.440],
+], 0.040, mCollect);
+
+/* Y-merge box + single exit pipe */
+em(box(0.18,0.068,0.050),mExh, 0,-0.053,-0.460);
+const exitPipe=new THREE.Mesh(tube(0.044,0.40,14),mExh);
+exitPipe.position.set(0,0.04,-0.650);exitPipe.rotation.x=Math.PI/2;exitPipe.castShadow=true;EG.add(exitPipe);
+em(new THREE.CylinderGeometry(0.044,0.058,0.042,14),mExh, 0,0.04,-0.855, Math.PI/2);
+
+/* ═══════════════════
+   5. TURBOCHARGER  (rear, above gearbox, inline with exhaust)
+   Single large unit. Mercedes-style rear mount.
+═══════════════════ */
+const TZ=-0.72; /* turbo Z position */
+/* Main turbine housing */
+em(new THREE.CylinderGeometry(0.112,0.112,0.22,24),mTurb, 0,0.04,TZ, Math.PI/2);
+/* Turbine cover endcap */
+em(new THREE.CylinderGeometry(0.100,0.100,0.038,24),mTurb, 0,0.04,TZ-0.128, Math.PI/2);
+/* Compressor cover endcap */
+em(new THREE.CylinderGeometry(0.100,0.100,0.038,24),mTurb, 0,0.04,TZ+0.128, Math.PI/2);
+/* Turbine blade disc */
+em(disk(0.088,0.022,20),mWheel, 0,0.04,TZ-0.15, Math.PI/2);
+/* Compressor blade disc */
+em(disk(0.088,0.022,20),mWheel, 0,0.04,TZ+0.15, Math.PI/2);
+/* Compressor blade vanes (10 thin sectors) */
+for(let v=0;v<10;v++){
+  const ang=v*Math.PI*0.2;
+  const vane=new THREE.Mesh(box(0.005,0.070,0.018),mWheel);
+  vane.position.set(Math.cos(ang)*0.048,0.04+Math.sin(ang)*0.048,TZ+0.15);
+  vane.rotation.z=ang;EG.add(vane);
+}
+/* Turbine side vanes */
+for(let v=0;v<10;v++){
+  const ang=v*Math.PI*0.2;
+  const vane=new THREE.Mesh(box(0.005,0.070,0.018),mWheel);
+  vane.position.set(Math.cos(ang)*0.048,0.04+Math.sin(ang)*0.048,TZ-0.15);
+  vane.rotation.z=ang;EG.add(vane);
+}
+/* Volute scroll housing (kidney-shaped snail) */
+em(new THREE.TorusGeometry(0.068,0.030,8,20,Math.PI*1.6),mTurb, 0,0.04,TZ+0.118, Math.PI/2);
+em(new THREE.TorusGeometry(0.068,0.030,8,20,Math.PI*1.6),mTurb, 0,0.04,TZ-0.118, Math.PI/2);
+/* Turbo outlet pipe (cold side → intercooler, exits top) */
+em(tube(0.036,0.20,10),mPipe, 0,0.195,TZ+0.13, -0.5);
+/* Wastegate actuator */
+em(disk(0.028,0.095,10),mAlu, 0.14,0.10,TZ, 0,0.3,0.5);
+em(tube(0.012,0.10,8),mSS,    0.14,0.16,TZ+0.06, -0.5,0,0.3);
+
+/* ═══════════════════
+   6. MGU-H  (Motor-Generator Unit – Heat)
+   Coaxial with turbo shaft.
+═══════════════════ */
+em(disk(0.060,0.105,20),mMGUh, 0,0.04,TZ, Math.PI/2);
+em(disk(0.040,0.116,20),mMGUh, 0,0.04,TZ, Math.PI/2); /* rotor inner */
+/* MGU-H cooling rib bands */
+for(let r=0;r<5;r++){
+  em(new THREE.TorusGeometry(0.064,0.004,6,20),mMGUh, 0,0.04,TZ-0.040+r*0.020);
+}
+/* MGU-H wiring loom exit */
+em(tube(0.010,0.12,6),mAccent, 0.065,0.10,TZ+0.08, -0.3,-0.4,0);
+
+/* ═══════════════════
+   7. CHARGE AIR SYSTEM
+   Turbo → intercooler charge pipes
+═══════════════════ */
+/* Intercooler core (side-pod style) */
+em(box(0.14,0.10,0.30),mAlu, -0.30,0.22, 0.10);
+em(box(0.14,0.10,0.30),mAlu,  0.30,0.22, 0.10);
+/* Charge pipe left side: turbo outlet → intercooler → intake */
+em(tube(0.028,0.46,10),mPipe, -0.18,0.28, TZ+0.22, 0.42,0, 0.55);
+em(tube(0.028,0.46,10),mPipe,  0.18,0.28, TZ+0.22, 0.42,0,-0.55);
+
+/* ═══════════════════
+   8. MGU-K  (Motor-Generator Unit – Kinetic)
+   Front of engine, bolted to crank snout.
+   Roughly 240mm × 150mm × 80mm unit.
+═══════════════════ */
+/* Body */
+em(box(0.24,0.14,0.10),mMGUk, 0,-0.04,0.43);
+/* Rounded end caps */
+em(disk(0.070,0.102,18),mMGUk, 0,-0.04,0.433, Math.PI/2);
+/* Cooling fins */
+for(let i=-5;i<=5;i++){
+  em(box(0.26,0.012,0.008),mMGUk, 0,-0.04+i*0.012,0.43);
+}
+/* Connection flange to block */
+em(disk(0.068,0.030,18),mAlu, 0,-0.04,0.380, Math.PI/2);
+/* MGU-K wiring harness */
+em(tube(0.011,0.18,6),mAccent, -0.14,0.05,0.44, 0.5,0.4,0);
+em(tube(0.011,0.18,6),mAccent,  0.14,0.05,0.44, 0.5,-0.4,0);
+
+/* ═══════════════════
+   9. ERS ENERGY STORE
+   Lithium-ion pod, F1 regulations: ≤20 kg, max 4 MJ.
+   Mounted alongside gearbox / behind engine.
+   Two slim packs either side.
+═══════════════════ */
+/* Main pack bodies */
+em(box(0.12,0.26,0.62),mERS,  0.38,0.01, 0.00);
+em(box(0.12,0.26,0.62),mERS, -0.38,0.01, 0.00);
+/* Cell cooling plate bands */
+for(let i=0;i<8;i++){
+  const fz=-0.27+i*0.08;
+  em(box(0.125,0.008,0.62),mERS,  0.38,0.10+i*0.001,fz);
+  em(box(0.125,0.008,0.62),mERS, -0.38,0.10+i*0.001,fz);
+}
+/* Structural ribs on packs */
+for(let i=0;i<4;i++){
+  const fz=-0.22+i*0.16;
+  em(box(0.014,0.26,0.014),mAlu,  0.444,0.01,fz);
+  em(box(0.014,0.26,0.014),mAlu, -0.444,0.01,fz);
+}
+/* ERS wiring trunk */
+em(tube(0.016,0.36,8),mAccent,  0.32,0.14, 0.0, 0,0,Math.PI/2);
+em(tube(0.016,0.36,8),mAccent, -0.32,0.14, 0.0, 0,0,Math.PI/2);
+/* DC-DC converter box */
+em(box(0.10,0.07,0.10),mMGUk, 0,0.18, -0.38);
+
+/* ═══════════════════
+   10. COOLING SYSTEM
+   Water pump, radiator rails, coolant hoses
+═══════════════════ */
+/* Water pump body */
+em(disk(0.045,0.065,16),mAlu, 0.22,-0.04, 0.35, 0,0,Math.PI/2);
+em(disk(0.032,0.070,16),mAlu, 0.22,-0.04, 0.35, 0,0,Math.PI/2);
+/* Upper and lower coolant rails */
+em(box(0.60,0.032,0.08),mPipe, 0, 0.175, 0.32);
+em(box(0.60,0.032,0.08),mPipe, 0,-0.048, 0.32);
+/* Vertical risers from rails to heads */
+for(let s=-1;s<=1;s+=2){
+  em(tube(0.016,0.22,8),mPipe, s*0.265,0.065, 0.32);
+}
+/* Oil feed lines */
+em(tube(0.012,0.65,8),mPipe, -0.20,0.12, 0, 0,0,Math.PI*0.06);
+em(tube(0.012,0.65,8),mPipe,  0.20,0.12, 0, 0,0,-Math.PI*0.06);
+/* Oil tank */
+em(box(0.14,0.16,0.14),mCast, 0,0.09, 0.40);
+em(disk(0.030,0.020,12),mBolt, 0,0.178,0.40, Math.PI/2); /* oil cap */
+
+/* ═══════════════════
+   11. BELLHOUSING + GEARBOX ADAPTER
+   Mates engine to semi-stressed gearbox carbon case.
+═══════════════════ */
+em(new THREE.CylinderGeometry(0.220,0.250,0.135,20),mCast, 0,-0.02,-0.420, Math.PI/2);
+em(new THREE.CylinderGeometry(0.195,0.195,0.050,20),mCast, 0,-0.02,-0.490, Math.PI/2);
+/* Bellhousing bolts (8x) */
+for(let b=0;b<8;b++){
+  const a=b*Math.PI/4;
+  em(disk(0.014,0.030,8),mBolt, Math.cos(a)*0.200,-0.02+Math.sin(a)*0.200,-0.492, Math.PI/2);
+}
+
+/* ═══════════════════
+   12. ANCILLARIES
+═══════════════════ */
+/* Power steering pump */
+em(disk(0.035,0.065,14),mAlu, -0.24,0.16, 0.38, 0,0,Math.PI/2);
+/* Alternator/scavenge pump cluster */
+em(box(0.09,0.09,0.11),mCast, 0.24,0.12, 0.38);
+/* Hydraulic manifold */
+em(box(0.10,0.06,0.08),mAlu, 0,0.06,-0.36);
+/* Breather/vent pipes */
+em(tube(0.010,0.14,6),mPipe, -0.24,0.24, 0.15, 0.4,0,-0.2);
+em(tube(0.010,0.14,6),mPipe,  0.24,0.24, 0.15, 0.4,0, 0.2);
+
+/* ═══════════════════
+   13. WIRING LOOMS
+   CatmullRomCurve3 routed harnesses — subtle radius,
+   matte insulation colours matching real F1 PU wiring.
+   Each loom is a thin TubeGeometry (r ≈ 0.008–0.012).
+═══════════════════ */
+function loom(pts, r, mat, closed){
+  const curve = new THREE.CatmullRomCurve3(
+    pts.map(p => new THREE.Vector3(...p)), closed||false
+  );
+  const geo = new THREE.TubeGeometry(curve, pts.length*6, r, 6, closed||false);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  EG.add(mesh);
+  return mesh;
+}
+
+/* ── Material shorthands ── */
+/* Main harness trunk – dark grey braid */
+const mLoomGrey = new THREE.MeshStandardMaterial({color:0x1e1e1e, metalness:0.1, roughness:0.88});
+/* HV orange (ERS / MGU high-voltage) */
+const mLoomOrange = new THREE.MeshStandardMaterial({color:0xcc4400, metalness:0.05, roughness:0.82});
+/* Signal/sensor – dark red (like real F1 loom tape) */
+const mLoomRed = new THREE.MeshStandardMaterial({color:0x7a0000, metalness:0.05, roughness:0.85});
+/* Coolant sensor – muted teal */
+const mLoomTeal = new THREE.MeshStandardMaterial({color:0x1a3a38, metalness:0.08, roughness:0.80});
+/* ERS negative return – black */
+const mLoomBlack = new THREE.MeshStandardMaterial({color:0x0a0a0a, metalness:0.05, roughness:0.90});
+
+/* ── 1. Main engine harness trunk
+   Exits ECU-side (front), drops to lower block,
+   curves around the left flank and routes toward turbo ── */
+loom([
+  [ 0.00, 0.10,  0.42],   /* ECU exit / oil tank side */
+  [-0.08, 0.06,  0.30],   /* droops under intake runners */
+  [-0.16, 0.03,  0.10],   /* skirts left block face */
+  [-0.22, 0.05, -0.10],   /* continues left flank */
+  [-0.26, 0.08, -0.28],   /* rises slightly past exhaust collector */
+  [-0.22, 0.12, -0.50],   /* bends inward toward turbo */
+  [-0.10, 0.10, -0.65],   /* arrives turbo/MGU-H region */
+  [ 0.00, 0.08, -0.72],   /* terminates at MGU-H connector */
+], 0.010, mLoomGrey);
+
+/* ── 2. Mirror trunk – right flank (slightly shorter arc) ── */
+loom([
+  [ 0.00, 0.10,  0.42],
+  [ 0.08, 0.06,  0.30],
+  [ 0.18, 0.03,  0.12],
+  [ 0.24, 0.05, -0.08],
+  [ 0.26, 0.09, -0.30],
+  [ 0.20, 0.13, -0.52],
+  [ 0.08, 0.10, -0.68],
+], 0.009, mLoomGrey);
+
+/* ── 3. HV orange loom: MGU-K (front) → ERS pack (left side)
+   High-voltage always orange on real F1 cars ── */
+loom([
+  [ 0.00,-0.04,  0.43],   /* MGU-K connector */
+  [-0.08,-0.02,  0.36],
+  [-0.18, 0.02,  0.22],
+  [-0.30, 0.05,  0.10],   /* passes left of block */
+  [-0.38, 0.08,  0.00],   /* arrives ERS pack face */
+], 0.011, mLoomOrange);
+
+/* ── 4. HV orange return: MGU-K right side → ERS right pack ── */
+loom([
+  [ 0.00,-0.04,  0.43],
+  [ 0.10,-0.02,  0.36],
+  [ 0.20, 0.02,  0.20],
+  [ 0.32, 0.06,  0.06],
+  [ 0.38, 0.08,  0.00],
+], 0.011, mLoomOrange);
+
+/* ── 5. MGU-H HV loom: turbo unit → left ERS pack
+   Routes along the top of the bellhousing ── */
+loom([
+  [ 0.00, 0.04, -0.72],   /* MGU-H */
+  [-0.06, 0.12, -0.60],
+  [-0.16, 0.16, -0.44],
+  [-0.28, 0.14, -0.28],
+  [-0.38, 0.10, -0.08],
+  [-0.38, 0.08,  0.00],   /* ERS pack */
+], 0.010, mLoomOrange);
+
+/* ── 6. Sensor/signal harness – left cam cover → ECU
+   Fine red loom, wraps over intake plenum ── */
+loom([
+  [-0.255, 0.393, -0.195],  /* left cam cover sensor port */
+  [-0.18,  0.41,  -0.08],   /* lifts over plenum */
+  [-0.08,  0.40,   0.06],
+  [ 0.00,  0.36,   0.20],   /* drops toward ECU area */
+  [ 0.00,  0.18,   0.40],   /* ECU / oil tank region */
+], 0.008, mLoomRed);
+
+/* ── 7. Sensor harness – right cam cover ── */
+loom([
+  [ 0.255, 0.393, -0.195],
+  [ 0.18,  0.41,  -0.08],
+  [ 0.08,  0.40,   0.06],
+  [ 0.00,  0.36,   0.20],
+  [ 0.00,  0.18,   0.40],
+], 0.008, mLoomRed);
+
+/* ── 8. Coolant temp sensor loom: upper coolant rail → ECU
+   Teal insulation, very fine ── */
+loom([
+  [-0.30, 0.175,  0.32],   /* upper coolant rail left */
+  [-0.20, 0.19,   0.34],
+  [-0.10, 0.20,   0.38],
+  [ 0.00, 0.18,   0.40],   /* ECU */
+], 0.007, mLoomTeal);
+
+/* ── 9. ERS negative return trunk: left pack → DC-DC converter
+   Runs along inside of left pack, black insulation ── */
+loom([
+  [-0.38, 0.08,   0.00],   /* left ERS pack */
+  [-0.30, 0.14,  -0.12],
+  [-0.18, 0.18,  -0.28],
+  [-0.06, 0.18,  -0.36],   /* DC-DC converter */
+  [ 0.00, 0.18,  -0.38],
+], 0.009, mLoomBlack);
+
+/* ── 10. ERS negative return – right side ── */
+loom([
+  [ 0.38, 0.08,   0.00],
+  [ 0.30, 0.14,  -0.12],
+  [ 0.18, 0.18,  -0.28],
+  [ 0.06, 0.18,  -0.36],
+  [ 0.00, 0.18,  -0.38],
+], 0.009, mLoomBlack);
+
+/* ── 11. Wastegate/turbo actuator signal wire
+   Thin grey, short run from actuator to main trunk ── */
+loom([
+  [ 0.14, 0.10, -0.72],   /* wastegate actuator */
+  [ 0.10, 0.14, -0.66],
+  [ 0.04, 0.12, -0.60],
+  [ 0.00, 0.08, -0.72],   /* merges into MGU-H connector area */
+], 0.006, mLoomGrey);
+
+/* ── 12. Power steering pressure line: pump → hydraulic manifold
+   Routed forward along left block face ── */
+loom([
+  [-0.24, 0.16,  0.38],   /* PS pump */
+  [-0.24, 0.10,  0.28],
+  [-0.20, 0.07,  0.10],
+  [-0.14, 0.06, -0.10],
+  [-0.06, 0.06, -0.28],
+  [ 0.00, 0.06, -0.36],   /* hydraulic manifold */
+], 0.008, mLoomTeal);
+
+/* ─────────────────────────────────────────────
+   ENGINE FITTED TO CAR (after GLB loads)
+───────────────────────────────────────────── */
+setP(10,'Loading chassis model…');
+fakeT=setInterval(()=>{if(fakeP<80){fakeP+=0.35;setP(fakeP);}},80);
+
+new THREE.GLTFLoader().load('f1car.glb',
+  gltf=>{
+    clearInterval(fakeT);setP(90,'Assembling geometry…');
+    const car=gltf.scene;
+    const bb=new THREE.Box3().setFromObject(car);
+    const sz=new THREE.Vector3();bb.getSize(sz);
+    const carScale=5/Math.max(sz.x,sz.y,sz.z);
+    car.scale.setScalar(carScale);
+    bb.setFromObject(car);
+    const cn=new THREE.Vector3();bb.getCenter(cn);
+    car.position.sub(cn);
+    bb.setFromObject(car);
+    car.position.y-=bb.min.y;
+    car.position.y+=0.02;
+    pivot.add(car);
+
+    const cBB=new THREE.Box3().setFromObject(car);
+    const cW=cBB.max.x-cBB.min.x;
+    const cH=cBB.max.y-cBB.min.y;
+    const cD=cBB.max.z-cBB.min.z;
+
+    /* Engine intrinsic width including ERS packs ≈ 1.00 units
+       Target: engine fills ~72% car width */
+    const EG_INTRINSIC_W=1.02;
+    const egS=(cW*0.72)/EG_INTRINSIC_W;
+    EG.scale.setScalar(egS);
+
+    /* Vertical: keel + 28% height (sits in monocoque lower half) */
+    /* Lengthwise: 44% from front of car (behind driver, before gearbox) */
+    EG.position.set(
+      0,
+      cBB.min.y+cH*0.25,
+      cBB.min.z+cD*0.44
+    );
+    EG.rotation.y=Math.PI; /* exhaust faces rearward */
+
+    /* Engine bay lights follow engine position */
+    engFill.position.copy(EG.position);
+    engFill.position.y+=0.3;
+    engRim.position.copy(EG.position);
+    engRim.position.y+=0.4;
+    engRim.position.z-=0.3;
+
+    car.traverse(obj=>{
+      if(COVER_NAMES.has(obj.name)){
+        coverObjs.push(obj);
+        coverOrigY.push(obj.position.y);
+        coverOrigScale.push(obj.scale.clone());
+      }
+      if(obj.isMesh){
+        obj.castShadow=true;obj.receiveShadow=true;
+        const mats=Array.isArray(obj.material)?obj.material:[obj.material];
+        mats.forEach(m=>{if(m)m.envMapIntensity=1.4;});
+      }
+    });
+
+    carLoaded=true;setP(100,'Ready');
+    setTimeout(()=>{
+      loaderEl.style.opacity='0';
+      setTimeout(()=>loaderEl.style.display='none',1000);
+      document.getElementById('panel-left').classList.add('vis');
+      document.getElementById('panel-right').classList.add('vis');
+      setTimeout(()=>document.getElementById('viewBtn').classList.add('vis'),300);
+    },300);
+  },
+  xhr=>{if(xhr.total>0){clearInterval(fakeT);setP(Math.min(Math.round(xhr.loaded/xhr.total*75)+10,80));}},
+  err=>{
+    clearInterval(fakeT);
+    lsEl.textContent='⚠ f1car.glb not found';
+    lsEl.style.color='#e8001d';
+    setP(100);console.error(err);
+  }
+);
+
+/* ── DRAG / ROTATE ── */
+let rotY=0,dragging=false,prevX=0,autoSpin=true,velocity=0;
+const hint=document.getElementById('hint');
+function killAuto(){if(!autoSpin)return;autoSpin=false;hint.classList.add('gone');}
+canvas.addEventListener('mousedown',e=>{dragging=true;prevX=e.clientX;killAuto();});
+window.addEventListener('mouseup',()=>dragging=false);
+window.addEventListener('mousemove',e=>{
+  if(!dragging)return;
+  const d=(e.clientX-prevX)*0.012;rotY+=d;velocity=d;
+  pivot.rotation.y=rotY;prevX=e.clientX;
+});
+canvas.addEventListener('touchstart',e=>{dragging=true;prevX=e.touches[0].clientX;killAuto();},{passive:true});
+window.addEventListener('touchend',()=>dragging=false);
+window.addEventListener('touchmove',e=>{
+  if(!dragging)return;
+  rotY+=(e.touches[0].clientX-prevX)*0.012;
+  pivot.rotation.y=rotY;prevX=e.touches[0].clientX;
+},{passive:true});
+canvas.addEventListener('wheel',e=>{
+  e.preventDefault();
+  zoomR+=e.deltaY*0.01;zoomR=Math.max(3,Math.min(14,zoomR));
+  updateCamera();killAuto();
+},{passive:false});
+let lastPD=null;
+window.addEventListener('touchmove',e=>{
+  if(e.touches.length===2){
+    const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(lastPD!==null){zoomR-=(d-lastPD)*0.02;zoomR=Math.max(3,Math.min(14,zoomR));updateCamera();}
+    lastPD=d;
+  }
+},{passive:true});
+window.addEventListener('touchend',()=>{lastPD=null;});
+
+/* ─────────────────────────────────────────────
+   EXPLODE ANIMATION  —  3-phase design
+   
+   OPEN:
+     Phase 1 (0→0.35): engine fades in + rises from below
+     Phase 2 (0→1.0):  body panels lift upward (full duration)
+     Phase 3 (0.6→1.0): emissive glow ignites
+   
+   CLOSE:
+     Phase 1 (0→0.4):  emissive glow fades
+     Phase 2 (0→0.75): body panels descend
+     Phase 3 (0.55→1): engine sinks + fades out
+     — panels finish slightly AFTER engine disappears
+       so there's no visible clipping gap
+───────────────────────────────────────────── */
+let exploded=false,animating=false;
+const LIFT=2.0, OPEN_DUR=1600, CLOSE_DUR=1800;
+const viewBtn=document.getElementById('viewBtn');
+const closeBtn=document.getElementById('closeBtn');
+
+/* Easing curves */
+function easeOut(t){return 1-(1-t)*(1-t)*(1-t);}
+function easeIn(t){return t*t*t;}
+function easeInOut(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}
+
+/* All emissive materials with their max intensities */
+const EMISSIVES=[
+  {mat:mExh,  peak:1.8},
+  {mat:mMGUh, peak:1.1},
+  {mat:mMGUk, peak:1.0}
+];
+
+/* Make engine meshes transparent for fade */
+const engineMeshes=[];
+EG.traverse(o=>{if(o.isMesh)engineMeshes.push(o);});
+function setEngineOpacity(a){
+  engineMeshes.forEach(o=>{
+    const mats=Array.isArray(o.material)?o.material:[o.material];
+    mats.forEach(m=>{
+      m.transparent=true;
+      m.opacity=Math.max(0,Math.min(1,a));
+    });
+  });
+}
+setEngineOpacity(0);
+
+/* Engine Y offset for rise-in animation */
+let engYOffset=0;
+const ENG_RISE=0.35; /* how many units engine rises from below */
+
+function doExplode(){
+  if(animating||!carLoaded)return;
+  animating=true;viewBtn.disabled=true;closeBtn.disabled=true;
+
+  const opening=!exploded;
+  const DUR=opening?OPEN_DUR:CLOSE_DUR;
+  const t0=performance.now();
+
+  if(opening){
+    EG.visible=true;
+    setEngineOpacity(0);
+    engYOffset=-ENG_RISE;
+  }
+
+  (function tick(now){
+    const rawT=Math.min((now-t0)/DUR,1);
+
+    if(opening){
+      /* ── OPEN ── */
+      /* Panels: full arc, ease-out */
+      const panelT=easeOut(rawT);
+      coverObjs.forEach((o,i)=>o.position.y=coverOrigY[i]+LIFT*panelT);
+
+      /* Engine opacity: 0→1 in first 40% */
+      const opT=Math.min(rawT/0.40,1);
+      setEngineOpacity(easeOut(opT));
+
+      /* Engine Y rise: lifts into place in first 45% */
+      const riseT=Math.min(rawT/0.45,1);
+      engYOffset=-ENG_RISE*(1-easeOut(riseT));
+      EG.position.y=EG.userData.baseY+engYOffset;
+
+      /* Glow: ignites from 55% onward */
+      const glowT=Math.max(0,(rawT-0.55)/0.45);
+      EMISSIVES.forEach(e=>e.mat.emissiveIntensity=e.peak*easeOut(glowT));
+      engFill.intensity=3.5*easeOut(glowT);
+      engRim.intensity =2.0*easeOut(glowT);
+
+    } else {
+      /* ── CLOSE ── */
+      /* Glow: fades in first 35% */
+      const glowT=1-Math.min(rawT/0.35,1);
+      EMISSIVES.forEach(e=>e.mat.emissiveIntensity=e.peak*easeIn(glowT));
+      engFill.intensity=3.5*easeIn(glowT);
+      engRim.intensity =2.0*easeIn(glowT);
+
+      /* Panels descend: run 0→80% of total time, ease-in-out */
+      const panelRaw=Math.min(rawT/0.80,1);
+      const panelT=easeInOut(panelRaw);
+      coverObjs.forEach((o,i)=>o.position.y=coverOrigY[i]+LIFT*(1-panelT));
+
+      /* Engine sink + fade: starts 50%, finishes at 100% */
+      const engRaw=Math.max(0,(rawT-0.50)/0.50);
+      const sinkT=easeIn(engRaw);
+      setEngineOpacity(1-sinkT);
+      engYOffset=-ENG_RISE*sinkT;
+      EG.position.y=EG.userData.baseY+engYOffset;
+    }
+
+    if(rawT<1){requestAnimationFrame(tick);return;}
+
+    /* ── FINALISE ── */
+    animating=false;viewBtn.disabled=false;closeBtn.disabled=false;
+    exploded=!exploded;
+
+    if(exploded){
+      viewBtn.classList.remove('vis');closeBtn.classList.add('vis');
+      /* snap everything clean */
+      coverObjs.forEach((o,i)=>o.position.y=coverOrigY[i]+LIFT);
+      setEngineOpacity(1);
+      engYOffset=0;EG.position.y=EG.userData.baseY;
+    } else {
+      closeBtn.classList.remove('vis');viewBtn.classList.add('vis');
+      /* fully hidden */
+      EG.visible=false;
+      setEngineOpacity(0);
+      EMISSIVES.forEach(e=>e.mat.emissiveIntensity=0);
+      engFill.intensity=0;engRim.intensity=0;
+      engYOffset=0;EG.position.y=EG.userData.baseY;
+      /* snap panels flush */
+      coverObjs.forEach((o,i)=>o.position.y=coverOrigY[i]);
+    }
+  })(performance.now());
+}
+
+/* Store base Y after car loads */
+function storeBaseY(){EG.userData.baseY=EG.position.y;}
+
+viewBtn.addEventListener('click',()=>{storeBaseY();doExplode();});
+closeBtn.addEventListener('click',()=>{storeBaseY();doExplode();});
+
+/* ── RENDER LOOP ── */
+let pulse=0;
+(function animate(){
+  requestAnimationFrame(animate);
+  pulse+=0.016;
+  if(!dragging){
+    if(Math.abs(velocity)>0.0001){rotY+=velocity;velocity*=0.95;}
+    else if(autoSpin){rotY+=0.004;}
+    pivot.rotation.y=rotY;
+  }
+  if(carLoaded)pivot.position.y=Math.sin(performance.now()*0.0007)*0.04;
+
+  /* Live pulsing glow when open */
+  if(exploded){
+    const p=(Math.sin(pulse*2.0)+1)*0.5;
+    const q=(Math.sin(pulse*3.1+1.0)+1)*0.5;
+    mExh.emissiveIntensity  =1.1+p*0.7;
+    mERS.emissiveIntensity  =0;
+    mMGUh.emissiveIntensity =0.55+p*0.55;
+    mMGUk.emissiveIntensity =0.55+q*0.45;
+    engFill.intensity=2.2+p*1.3;
+    engRim.intensity =1.4+q*0.8;
+    engFill.color.setRGB(1.0, 0.28+p*0.32, 0.0);
+    engRim.color.setRGB(0.2+q*0.2, 0.4+q*0.3, 1.0);
+  }
+
+  ring.material.opacity=0.75+0.20*Math.sin(pulse*1.4);
+  renderer.render(scene,camera);
+})();
+
+window.addEventListener('resize',()=>{
+  renderer.setSize(innerWidth,innerHeight);
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+});
+</script>
+<script src="sound.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Race</title>
+    <link href="predict_race.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container"></div>
+    <div class="page-layout">
+
+    <div class="left-panel">
+    <h1>Predict Race</h1>
+    <h1>Conditions</h1>
+    <form action="post">
+        <label for="circuit">Circuit:</label>
+        <select name="tracks" id="circuit">
+            <option value="bahrain_circuit">Bahrain International Circuit (Bahrain)</option>
+            <option value="jeddah_corniche_circuit">Jeddah Corniche Circuit (Saudi Arabia)</option>
+            <option value="albert_park">Albert Park Circuit (Australia)</option>
+            <option value="suzuka_international_circuit">Suzuka Circuit (Japan)</option>
+            <option value="shanghai_international_circuit">Shanghai International Circuit (China)</option>
+            <option value="miami_international_circuit">Miami International Autodrome (USA)</option>
+            <option value="imola_circuit">Autodromo Enzo e Dino Ferrari – Imola (Italy)</option>
+            <option value="monaco_circuit">Circuit de Monaco (Monaco)</option>
+            <option value="barcelona_catalunya_circuit">Circuit de Barcelona-Catalunya (Spain)</option>
+            <option value="circuit_gilles_villeneuve">Circuit Gilles Villeneuve (Canada)</option>
+            <option value="red_bull_ring_circuit">Red Bull Ring (Austria)</option>
+            <option value="silverstone_circuit">Silverstone Circuit (United Kingdom)</option>
+            <option value="hungaroring_circuit">Hungaroring (Hungary)</option>
+            <option value="spa_francorchamps_circuit">Circuit de Spa-Francorchamps (Belgium)</option>
+            <option value="zandvoort_circuit">Circuit Zandvoort (Netherlands)</option>
+            <option value="monza_circuit">Autodromo Nazionale Monza (Italy)</option>
+            <option value="baku_city_circuit">Baku City Circuit (Azerbaijan)</option>
+            <option value="marina_bay_circuit">Marina Bay Street Circuit (Singapore)</option>
+            <option value="america_circuit">Circuit of the Americas (USA)</option>
+            <option value="autodromo_hermano">Autódromo Hermanos Rodríguez (Mexico)</option>
+            <option value="interlagos_circuit">Autódromo José Carlos Pace – Interlagos (Brazil)</option>
+            <option value="las_vegas_street_circuit">Las Vegas Strip Circuit (USA)</option>
+            <option value="lusail_international_circuit">Lusail International Circuit (Qatar)</option>
+            <option value="yas_marina_circuit">Yas Marina Circuit (Abu Dhabi)</option>
+        </select>
+
+        <label for="year">Year:</label>
+        <input type="number" id="year" class="year-input" min="2000" max="2026" placeholder="2024">
+
+        <label for="round">Round:</label>
+        <input type="number" id="round" class="air-input" name="round" min="1" max="24" placeholder="1">
+
+        <label>
+            Air Temperature
+            <input id="air_temp" class="air-input" type="number" min="5" max="45" value="20"> °C
+            <span class="input-hint">(5–45)</span>
+        </label>
+        <label>
+            Track Temperature
+            <input id="track_temp" class="air-input" type="number" min="5" max="60" value="30"> °C
+            <span class="input-hint">(5–60)</span>
+        </label>
+        <label>
+            Humidity
+            <input id="humidity" class="air-input" type="number" min="0" max="100" value="60"> %
+            <span class="input-hint">(0–100)</span>
+        </label>
+        <label>
+            Rainfall
+            <input id="rainfall" class="air-input" type="number" min="0" max="50" value="0"> mm
+            <span class="input-hint">(0–50)</span>
+        </label>
+    </form>
+
+    <div class="table"></div>
+    <h1>Qualifying Grid</h1>
+    <table class="qualifying-selection">
+        <tr>
+            <th>Driver</th>
+            <th>Grid Position</th>
+            <th>Tyre Compound</th>
+        </tr>
+        <tr>
+            <td>VER</td>
+            <td><select id="pos_ver"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_ver"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+        <tr>
+            <td>NOR</td>
+            <td><select id="pos_nor"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_nor"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+        <tr>
+            <td>LEC</td>
+            <td><select id="pos_lec"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_lec"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+        <tr>
+            <td>HAM</td>
+            <td><select id="pos_ham"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_ham"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+        <tr>
+            <td>RUS</td>
+            <td><select id="pos_rus"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_rus"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+        <tr>
+            <td>PIA</td>
+            <td><select id="pos_pia"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_pia"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+        <tr>
+            <td>SAI</td>
+            <td><select id="pos_sai"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_sai"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+        <tr>
+            <td>ALO</td>
+            <td><select id="pos_alo"><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option><option value="5">P5</option><option value="6">P6</option><option value="7">P7</option><option value="8">P8</option></select></td>
+            <td><select id="tyre_alo"><option value="SOFT">SOFT</option><option value="MEDIUM">MEDIUM</option><option value="HARD">HARD</option></select></td>
+        </tr>
+    </table>
+
+
+    <div id="loading-msg" style="display:none;"></div>
+
+   <button type="button" class="predict-btn" onclick="clickFunction()">
+    Predict Race
+</button>
+
+
+<div id="error-msg" style="display:none; color:#ff2a2a;">
+    Prediction failed. Please try again.
+</div>
+
+    <div class="right-panel">
+    <div id="results-section" style="display:none;">
+        <h1>Prediction Results</h1>
+        <div class="summary-container">
+            <div class="summary-card">
+                <p>Favorite to Win</p>
+                <h2 id="summary-favorite">—</h2>
+                <span id="summary-favorite-name" class="summary-fullname">—</span>
+            </div>
+            <div class="summary-card">
+                <p>Predicted Best Lap</p>
+                <h2 id="summary-bestlap">—</h2>
+                <span id="summary-bestlap-name" class="summary-fullname">—</span>
+            </div>
+        </div>
+        <h1>Driver Predictions</h1>
+        <div id="driver-cards-container"></div>
+    </div>
+    </div>
+<div class="bg-image"></div>
+
+    <link href="../sidebar.css" rel="stylesheet">
+    <script src="../sidebar.js"></script>
+    <script src="predict_race.js"></script>
+    <script src="../sound.js"></script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — GRID-X</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --red:     #ff2a2a;
+            --bg:      #080808;
+            --surface: rgba(255,255,255,0.03);
+            --border:  rgba(255,255,255,0.08);
+            --text:    #cccccc;
+            --muted:   #555555;
+            --white:   #ffffff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+    position: relative;
+    z-index: 10;
+    background:transparent !important;
+    backdrop-filter:none;
+    border-bottom: none;
+}
+
+.navbar-nav .nav-link {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 16px !important;
+}
+.navbar-toggler {
+    border-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255%2C42%2C42%2C1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+.navbar-collapse {
+    background:transparent;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.navbar-nav .nav-link.active   { color: #ff0000 !important; }
+.navbar-nav .nav-link.inactive { color: #ffffff !important; }
+.navbar-nav .nav-link:hover    { color: #5c5c5c !important; }
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            padding: 160px 20px 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.35;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.5) 60%, rgba(8,8,8,1) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 40px;
+        }
+
+        .hero-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            letter-spacing: 6px;
+            color: #ff0000;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.2s;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            line-height: 1;
+            white-space: nowrap;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.4s;
+        }
+
+        .hero-line {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 20px;
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+}
+
+        /* ===== MAIN CONTENT ===== */
+        .content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 40px 120px;
+        }
+
+        /* ===== INTRO ===== */
+        .intro {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 60px;
+            align-items: start;
+            margin-bottom: 100px;
+            padding-bottom: 80px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .intro-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            letter-spacing: 4px;
+            color: var(--red);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .intro-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 2px;
+            line-height: 1.3;
+            border-left: 4px solid var(--red);
+            padding-left: 20px;
+        }
+
+        .intro-body p {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .intro-body p:last-child { margin-bottom: 0; }
+
+        /* ===== SECTION TITLE ===== */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-left: 4px solid var(--red);
+            padding-left: 16px;
+            margin-bottom: 40px;
+        }
+
+        /* ===== MODULE CARDS ===== */
+        .modules { margin-bottom: 100px; }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--red);
+            border-radius: 12px;
+            padding: 28px;
+            transition: 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,42,42,0.04) 0%, transparent 60%);
+            opacity: 0;
+            transition: 0.25s ease;
+        }
+
+        .module-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-4px); }
+        .module-card:hover::before { opacity: 1; }
+
+        .module-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--red);
+            margin-bottom: 12px;
+        }
+
+        .module-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+        }
+
+        .module-desc {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #888;
+            letter-spacing: 0.3px;
+        }
+
+        .module-tag {
+            display: inline-block;
+            margin-top: 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--red);
+            border: 1px solid rgba(255,42,42,0.3);
+            border-radius: 4px;
+            padding: 3px 8px;
+            text-transform: uppercase;
+        }
+
+        /* ===== TECH STACK ===== */
+        .tech { margin-bottom: 100px; }
+
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tech-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s ease;
+        }
+
+        .tech-pill:hover {
+            border-color: rgba(255,42,42,0.4);
+            background: rgba(255,42,42,0.05);
+        }
+
+        .tech-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--red);
+            flex-shrink: 0;
+        }
+
+        .tech-pill span {
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: #aaa;
+        }
+
+        /* ===== VISION ===== */
+        .vision {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--red);
+            border-radius: 12px;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vision::after {
+            content: 'GRID-X';
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 100px;
+            font-weight: 900;
+            color: rgba(255,42,42,0.04);
+            letter-spacing: 8px;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .vision-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            letter-spacing: 4px;
+            color: var(--red);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .vision p {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            line-height: 1.9;
+            color: var(--text);
+            margin-bottom: 20px;
+            max-width: 800px;
+            letter-spacing: 0.3px;
+        }
+
+        .vision p:last-child { margin-bottom: 0; }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 100px;
+        }
+
+        .stat {
+            background: var(--bg);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--red);
+            letter-spacing: 2px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .intro { grid-template-columns: 1fr; gap: 32px; }
+        }
+
+        @media (max-width: 600px) {
+            .content { padding: 60px 24px 80px; }
+            .vision { padding: 32px 24px; }
+            .hero-title { font-size: 36px; }
+        }
+        @media (max-width: 768px) {
+    .hero { padding: 120px 16px 60px; }
+    .hero-tag { font-size: 11px; letter-spacing: 3px; }
+    .hero-line { font-size: 11px; letter-spacing: 1px; white-space: normal; text-align: center; }
+    .content { padding: 40px 16px 80px; }
+    .intro { grid-template-columns: 1fr; gap: 24px; margin-bottom: 60px; }
+    .intro-heading { font-size: 22px; }
+    .intro-body p { font-size: 15px; }
+    .modules-grid { grid-template-columns: 1fr; }
+    .vision { padding: 24px 16px; }
+    .vision p { font-size: 15px; }
+    .navbar-nav .nav-link { font-size: 14px !important; letter-spacing: 1px; }
+    .navbar-collapse { background: rgba(0,0,0,0.85); padding: 12px 16px; border-radius: 8px; }
+}
+
+@media (max-width: 480px) {
+    .hero-title { font-size: 32px; letter-spacing: 4px; }
+    .hero-tag { font-size: 9px; letter-spacing: 2px; }
+    .section-title { font-size: 16px; letter-spacing: 1px; }
+    .intro-heading { font-size: 18px; }
+    .stat-number { font-size: 28px; }
+    .stat-label { font-size: 10px; }
+    .tech-pill { padding: 8px 14px; }
+    .tech-pill span { font-size: 11px; }
+}
+
+@media (max-width: 360px) {
+    .hero-title { font-size: 26px; letter-spacing: 2px; }
+    .content { padding: 30px 12px 60px; }
+    .module-card { padding: 20px; }
+    .module-name { font-size: 13px; }
+    .module-desc { font-size: 12px; }
+}
+    </style>
+    <script src="sound.js"></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="image_folder/logo for now.jpg" alt="Logo" width="260" height="100">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link inactive" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link inactive" href="pitwall.html">Pit Wall</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="About_us.html">About Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+       
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="hero-tag">Formula 1 Intelligence Platform</p>
+            <h1 class="hero-title">GRID&#8209;X</h1>
+            <div class="hero-line">Global Race Index and Data eXchange</div>
+        </div>
+    </section>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <section class="intro">
+            <div>
+                <p class="intro-label">About</p>
+                <h2 class="intro-heading">What is GRID&#8209;X</h2>
+            </div>
+            <div class="intro-body">
+                <p>GRID&#8209;X is a machine learning powered Formula 1 analytics platform built to explore how data, strategy, and driver behavior shape race outcomes. The project brings together multiple predictive models and simulation tools to analyze race scenarios before a race even begins.</p>
+                <p>Formula 1 is influenced by countless variables — driver performance, tyre management, circuit layout, weather conditions, and race strategy. GRID&#8209;X was developed to demonstrate how modern machine learning techniques can model these complex interactions and generate meaningful insights about race dynamics.</p>
+                <p>By combining historical race data with predictive models, GRID&#8209;X allows users to explore different race situations, simulate strategies, and understand how small changes in conditions can influence the final outcome.</p>
+            </div>
+        </section>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">8</div>
+                <div class="stat-label">ML Models</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Circuits</div>
+            </div>
+        </div>
+
+        <section class="modules">
+            <h2 class="section-title">What GRID&#8209;X Can Do</h2>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-number">01</div>
+                    <div class="module-name">Race Outcome Prediction</div>
+                    <p class="module-desc">Ensemble ML models estimate win probability, podium likelihood, and points finish chances based on qualifying position, conditions, and driver characteristics.</p>
+                    <span class="module-tag">Ensemble Model</span>
+                </div>
+                <div class="module-card">
+                    <div class="module-number">02</div>
+                    <div class="module-name">Lap Time Prediction</div>
+                    <p class="module-desc">A Random Forest regression model predicts expected lap times using environmental variables, tyre compound, grid position, and session progress.</p>
+                    <span class="module-tag">Random Forest</span>
+                </div>
+                <div class="module-card">
+                    <div class="module-number">03</div>
+                    <div class="module-name">Driver Style Analysis</div>
+                    <p class="module-desc">A clustering model identifies behavioral patterns in aggression, consistency, braking intensity, tyre preservation, and overtaking ability for each driver.</p>
+                    <span class="module-tag">Clustering</span>
+                </div>
+                <div class="module-card">
+                    <div class="module-number">04</div>
+                    <div class="module-name">Stint Simulation</div>
+                    <p class="module-desc">An LSTM neural network simulates how lap times evolve over a stint, learning tyre degradation patterns from sequential lap data to forecast pace.</p>
+                    <span class="module-tag">LSTM Neural Net</span>
+                </div>
+                <div class="module-card">
+                    <div class="module-number">05</div>
+                    <div class="module-name">Circuit Recognition</div>
+                    <p class="module-desc">A CNN classifies track maps across all 24 F1 circuits and generates circuit embeddings to identify similar track characteristics and behavior.</p>
+                    <span class="module-tag">CNN · Computer Vision</span>
+                </div>
+                <div class="module-card">
+                    <div class="module-number">06</div>
+                    <div class="module-name">Tire Safety Analysis</div>
+                    <p class="module-desc">Evaluates tyre conditions over a stint — analyzing compound, stint length, track temperature, and degradation patterns to estimate safe operating limits.</p>
+                    <span class="module-tag">Safety Model</span>
+                </div>
+                <div class="module-card">
+                    <div class="module-number">07</div>
+                    <div class="module-name">Crash Risk Prediction</div>
+                    <p class="module-desc">Estimates race incident likelihood based on circuit characteristics, weather, driver aggression, and race positions. Flags high-risk scenarios before they occur.</p>
+                    <span class="module-tag">Risk Classifier</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech">
+            <h2 class="section-title">Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-pill"><div class="tech-dot"></div><span>Python</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>FastAPI</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>Scikit-learn</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>TensorFlow / Keras</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>LSTM Networks</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>CNN</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>Pandas</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>NumPy</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>XGBoost</span></div>
+                <div class="tech-pill"><div class="tech-dot"></div><span>Chart.js</span></div>
+            </div>
+        </section>
+
+        <section class="vision">
+            <p class="vision-label">Vision</p>
+            <p>GRID&#8209;X is designed as an experimental platform that demonstrates how artificial intelligence can be applied to motorsport analytics. By combining predictive models with interactive tools, the goal is to make Formula 1 race analysis more accessible, visual, and data-driven.</p>
+            <p>The long-term vision of GRID&#8209;X is to evolve into a comprehensive race intelligence system where machine learning models, strategy simulations, and circuit analysis work together to provide deeper insights into Formula 1 performance and race strategy.</p>
+        </section>
+
+    </main>
+
+   
+
+</body>
+</html>

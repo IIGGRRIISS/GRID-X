@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crash Risk Predict — GRID-X</title>
+    <link href="crash_risk.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="page-layout">
+    <div class="left-panel">
+        <h1>Crash Risk Predict</h1>
+
+        <form>
+            <label for="circuit">Circuit:</label>
+            <select id="circuit">
+                <option value="bahrain_international_circuit">Bahrain International Circuit</option>
+                <option value="jeddah_corniche_circuit">Jeddah Corniche Circuit</option>
+                <option value="albert_park">Albert Park Circuit</option>
+                <option value="suzuka_international_circuit">Suzuka Circuit</option>
+                <option value="shanghai_international_circuit">Shanghai International Circuit</option>
+                <option value="miami_international_autodrome">Miami International Autodrome</option>
+                <option value="imola_circuit">Imola Circuit</option>
+                <option value="monaco_circuit">Circuit de Monaco</option>
+                <option value="barcelona_catalunya_circuit">Circuit de Barcelona-Catalunya</option>
+                <option value="circuit_gilles_villeneuve">Circuit Gilles Villeneuve</option>
+                <option value="red_bull_ring">Red Bull Ring</option>
+                <option value="silverstone_circuit" selected>Silverstone Circuit</option>
+                <option value="hungaroring">Hungaroring</option>
+                <option value="spa_francorchamps">Circuit de Spa-Francorchamps</option>
+                <option value="zandvoort_circuit">Circuit Zandvoort</option>
+                <option value="monza_circuit">Autodromo Nazionale Monza</option>
+                <option value="baku_city_circuit">Baku City Circuit</option>
+                <option value="marina_bay_circuit">Marina Bay Street Circuit</option>
+                <option value="cota_circuit">Circuit of the Americas</option>
+                <option value="autodromo_hermanos">Autódromo Hermanos Rodríguez</option>
+                <option value="interlagos_circuit">Interlagos</option>
+                <option value="las_vegas_strip_circuit">Las Vegas Strip Circuit</option>
+                <option value="lusail_international_circuit">Lusail International Circuit</option>
+                <option value="yas_marina_circuit">Yas Marina Circuit</option>
+            </select>
+
+            <div class="toggle-row">
+                <span class="toggle-label">Wet Conditions</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="weather_wet">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <label>Track Temperature <input id="track_temp" class="air-input" type="number" min="5" max="60" value="25"> °C <span class="input-hint">(5–60)</span></label>
+
+            <div class="grid-section">
+                <span class="grid-section-label">Grid Positions &amp; Championship Points <span class="input-hint">(pts: 0–500)</span></span>
+                <div class="grid-list" id="grid-list"></div>
+            </div>
+        </form>
+
+        <div id="loading-msg" style="display:none;"></div>
+        <button class="check-btn" type="button" onclick="predictCrashRisk()">Predict Crash Risk</button>
+
+        <div id="error-msg">Prediction failed. Please try again.</div>
+    </div>
+
+    <div class="right-panel">
+        <div id="results-section" style="display:none;">
+            <h1>Risk Results</h1>
+
+            <div class="gauges-row">
+                <div class="gauge-wrap">
+                    <div class="gauge-container">
+                        <canvas id="crashGaugeChart"></canvas>
+                        <div class="gauge-center">
+                            <h2 id="crash-pct">—</h2>
+                            <p id="crash-risk-level">—</p>
+                        </div>
+                    </div>
+                    <div class="gauge-label">Crash Probability</div>
+                </div>
+
+                <div class="gauge-wrap">
+                    <div class="gauge-container">
+                        <canvas id="scGaugeChart"></canvas>
+                        <div class="gauge-center">
+                            <h2 id="sc-pct">—</h2>
+                            <p id="sc-label">SC</p>
+                        </div>
+                    </div>
+                    <div class="gauge-label">Safety Car Probability</div>
+                </div>
+            </div>
+
+            <h1>High Risk Drivers</h1>
+            <div class="drivers-row" id="drivers-row"></div>
+
+            <h1>Risk Factors</h1>
+            <div class="factors-list" id="factors-list"></div>
+
+            <h1>Recommendations</h1>
+            <div class="recs-list" id="recs-list"></div>
+        </div>
+    </div>
+</div>
+<div class="bg-image"></div>
+<link href="../sidebar.css" rel="stylesheet">
+<script src="../sidebar.js"></script>
+<script src="crash_risk.js"></script>
+<script src="../sound.js"></script>
+</body>
+</html>
