@@ -13,7 +13,7 @@ import os
 import traceback
 
 # Add the project root to Python path so we can import our modules
-project_root = Path("C:/Users/Faiz Ahmed/OneDrive/Desktop/GRID-X")
+project_root = Path(__file__).resolve().parents[2]
 sys.path.append(str(project_root))
 
 from scripts.models.model_adapters import LapTimeAdapter, RaceOutcomeAdapter
