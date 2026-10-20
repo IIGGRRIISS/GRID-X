@@ -14,6 +14,7 @@ import pandas as pd
 import uvicorn
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, validator
 import torch
 from torchvision import transforms
