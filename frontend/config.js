@@ -1,1 +1,1 @@
-window.API_BASE = " https://greensboro-elite-load-portrait.trycloudflare.com";
+window.API_BASE = "https://greensboro-elite-load-portrait.trycloudflare.com";
