@@ -336,7 +336,7 @@ function predictNextLap() {
 
     Promise.all([
 
-        fetch("http://localhost:8000/next-lap", {
+        fetch((window.API_BASE || "http://localhost:8000") + "/next-lap", {
 
             method: "POST",
 

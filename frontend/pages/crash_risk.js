@@ -392,7 +392,7 @@ function predictCrashRisk() {
     Promise.all([
 
         fetch(
-            "http://localhost:8000/crash-risk-predict",
+            (window.API_BASE || "http://localhost:8000") + "/crash-risk-predict",
             {
                 method: "POST",
 

@@ -668,7 +668,7 @@ function explainLap() {
 
 
     const apiRequest = fetch(
-        "http://localhost:8000/explain-lap",
+        (window.API_BASE || "http://localhost:8000") + "/explain-lap",
         {
             method: "POST",
 

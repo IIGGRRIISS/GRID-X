@@ -133,7 +133,7 @@ function analyzeCircuit() {
 
     Promise.all([
 
-        fetch("http://localhost:8000/analyze-circuit", {
+        fetch((window.API_BASE || "http://localhost:8000") + "/analyze-circuit", {
 
             method: "POST",
 

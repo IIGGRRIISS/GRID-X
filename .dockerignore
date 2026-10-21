@@ -1,0 +1,6 @@
+.git
+models
+**/node_modules
+circuit_images.zip
+documentation
+__pycache__

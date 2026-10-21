@@ -227,7 +227,7 @@ function optimizeStrategy() {
     Promise.all([
 
         fetch(
-            "http://localhost:8000/strategy-optimize",
+           (window.API_BASE || "http://localhost:8000") + "/strategy-optimize",
             {
                 method: "POST",
 

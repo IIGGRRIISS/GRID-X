@@ -1,17 +1,21 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements/ ./requirements/
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt || pip install --no-cache-dir -r requirements/requirements.txt
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy all project code, frontend, scripts, and model binaries
+# CPU-only torch first, so pip doesn't pull the CUDA build
+RUN pip install --no-cache-dir torch==2.7.0 torchvision==0.22.0 \
+    --index-url https://download.pytorch.org/whl/cpu
+
+COPY requirements/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-# Expose Hugging Face Space default port
-EXPOSE 7860
+# Download the models from Hugging Face during the build
+RUN python download_models.py
 
-# Start FastAPI server
+EXPOSE 7860
 CMD ["uvicorn", "API.main:app", "--host", "0.0.0.0", "--port", "7860"]

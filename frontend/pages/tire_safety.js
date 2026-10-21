@@ -201,7 +201,7 @@ function checkTireSafety() {
     Promise.all([
 
         fetch(
-            "http://localhost:8000/tire-safety-check",
+            (window.API_BASE || "http://localhost:8000") + "/tire-safety-check",
             {
 
                 method: "POST",

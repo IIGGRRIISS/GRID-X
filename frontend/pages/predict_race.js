@@ -239,7 +239,7 @@ function clickFunction() {
     // ===== API REQUEST =====
     Promise.all([
 
-        fetch("http://localhost:8000/predict", {
+        fetch((window.API_BASE || "http://localhost:8000") + "/predict", {
 
             method: "POST",
 

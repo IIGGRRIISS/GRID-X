@@ -169,7 +169,7 @@ function simulateStint() {
 
     Promise.all([
 
-        fetch("http://localhost:8000/stint-simulate", {
+        fetch((window.API_BASE || "http://localhost:8000") + "/stint-simulate", {
 
             method: "POST",
 

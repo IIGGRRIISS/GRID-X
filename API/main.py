@@ -570,9 +570,11 @@ if __name__ == "__main__":
 from fastapi.responses import FileResponse
 
 # Mount static assets (CSS, JS, images, videos)
-app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
-
+if Path("frontend").exists():
+    app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 # Serve index.html at root URL
 @app.get("/")
 async def read_index():
-    return FileResponse("frontend/index.html")
+    if Path("frontend/index.html").exists():
+        return FileResponse("frontend/index.html")
+    return {"status": "GRID-X API is running"}
